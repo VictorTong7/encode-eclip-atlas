@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Where RBPs bind – ENCODE eCLIP Atlas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-48eea8e06ff06eb442a2daacfce5ac08.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../report/report.css">
+</head>
+
+<body class="nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">ENCODE eCLIP Atlas</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Overview</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../report/data.html"> 
+<span class="menu-text">The data</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../report/binding.html" aria-current="page"> 
+<span class="menu-text">Where RBPs bind</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../report/cross-cell.html"> 
+<span class="menu-text">Cell lines</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../report/methods.html"> 
+<span class="menu-text">Methods</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#each-rbp-has-a-main-binding-region" id="toc-each-rbp-has-a-main-binding-region" class="nav-link active" data-scroll-target="#each-rbp-has-a-main-binding-region">Each RBP has a main binding region</a></li>
+  <li><a href="#two-axes-describe-most-of-the-variation" id="toc-two-axes-describe-most-of-the-variation" class="nav-link" data-scroll-target="#two-axes-describe-most-of-the-variation">Two axes describe most of the variation</a></li>
+  <li><a href="#how-similar-are-the-experiments" id="toc-how-similar-are-the-experiments" class="nav-link" data-scroll-target="#how-similar-are-the-experiments">How similar are the experiments?</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways">Key takeaways</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/VictorTong7/encode-eclip-atlas/blob/main/analysis/report/binding.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Where RBPs bind</h1>
+<p class="subtitle lead">Which transcript regions each RBP binds, and how similar different RBPs are</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Each peak was assigned to one transcript region by its midpoint: coding sequence (CDS), 3′UTR, 5′UTR, small ncRNA, noncoding exon, proximal intron (≤ 500 nt from a splice site) or distal intron. An experiment’s <strong>main binding category</strong> is the region where its share of peaks is highest <em>relative to the average RBP</em>. Raw shares would mostly reflect region length.</p>
+<details class="legend-more">
+<summary>
+Why categories rather than clusters?
+</summary>
+<p>The original plan clustered RBPs by their region profiles. The clusters were weak: mean silhouette 0.18–0.21 for 4–12 clusters, with no natural number of groups, and membership was unstable under resampling. The profiles form a continuum, so a transparent rule (main region, or “no clear preference” if the lead is under 0.25 log2) describes them more honestly.</p>
+</details>
+<section id="each-rbp-has-a-main-binding-region" class="level2">
+<h2 class="anchored" data-anchor-id="each-rbp-has-a-main-binding-region">Each RBP has a main binding region</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../results/figures/aim1_landscape_a_region_composition.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption><strong>Figure 1. Each main binding category is dominated by its own region.</strong> Mean share of peaks per transcript region for the experiments in each category. 25 of 231 experiments have no clear preference.</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>Experiments:</strong> 231 eCLIP experiments with ≥ 100 peaks; peaks on expressed genes only.</li>
+<li><strong>Category rule:</strong> for each region, the experiment’s peak share is compared with the mean share across all experiments in the same cell line (log2 ratio). The category is the group of the highest-scoring region.
+<ul>
+<li>Groups: CDS; 3′UTR; 5′UTR; ncRNA (small ncRNA + noncoding exon); splice-site intron (proximal intron); deep intron (distal intron).</li>
+<li>An experiment whose best group leads the next by &lt; 0.25 log2 (&lt; 1.19×) is labelled “no clear preference”.</li>
+</ul></li>
+<li><strong>Category sizes:</strong> CDS 44, 3′UTR 35, 5′UTR 13, ncRNA 33, splice-site intron 28, deep intron 53, no clear preference 25.</li>
+<li><strong>Bars:</strong> each bar shows the mean share of peaks in each of the 7 regions, averaged over the category’s experiments and normalised to 100%. Labels are shown for segments ≥ 8%.</li>
+</ul>
+<p>Script: <code>analysis/R/05_binding_landscape_figures.R</code>; data: <code>analysis/results/tables/rbp_categories.tsv</code>.</p>
+</details>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../results/figures/aim1_landscape_b_enrichment_heatmap.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption><strong>Figure 2. Region enrichment of every experiment.</strong> Rows are experiments grouped by main category; columns are transcript regions. Red = more enriched than the average experiment, blue = less.</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>Enrichment:</strong> for each experiment and region, log2 of the region’s share of peaks (on expressed genes) divided by the region’s share of the expressed transcriptome’s length in that cell line.</li>
+<li><strong>Scaling:</strong> values are z-scored per region across the 231 experiments and capped at ±3. Z-scoring removes the region-wide length effect, under which introns look depleted for every RBP.</li>
+<li><strong>Row order:</strong> grouped by main category, strongest preference (largest lead) first.</li>
+<li><strong>Right-hand annotations:</strong> cell line, peak count (log scale) and selected well-studied RBPs.</li>
+</ul>
+<p>Script: <code>analysis/R/05_binding_landscape_figures.R</code>; data: <code>analysis/results/tables/rbp_clusters.tsv</code> (z-scores).</p>
+</details>
+</section>
+<section id="two-axes-describe-most-of-the-variation" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="two-axes-describe-most-of-the-variation">Two axes describe most of the variation</h2>
+<p>A principal component analysis (PCA) of the seven region scores combines them into a few independent axes. Each axis is ranked by how much of the difference between experiments it captures. The first two capture 56%:</p>
+<ul>
+<li><strong>PC1 (32%) separates intron binders from coding-sequence binders.</strong> RBPs that bind near splice sites or deep in introns sit on the right; RBPs that bind within the coding sequence sit on the left.</li>
+<li><strong>PC2 (24%) separates the 5′ end and small RNAs from the 3′ end.</strong> RBPs that favour 5′UTRs and small non-coding RNAs (snoRNAs, snRNAs) sit at the top; RBPs that favour 3′UTRs and deep introns sit at the bottom.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="../results/figures/aim1_landscape_c_pca.png" class="img-fluid figure-img column-page-left"></p>
+<figcaption><strong>Figure 3. Each binding category occupies its own part of the map.</strong> All experiments on the first two principal components; each panel highlights one main binding category in colour (grey = all others).</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>PCA:</strong> run on the 231 × 7 matrix of z-scored region enrichments (Figure 2), centred, without further scaling (<code>prcomp</code> in R).</li>
+<li><strong>Variance explained:</strong> PC1 32%, PC2 24%, PC3 14%. PC3 is not shown; it mainly separates 3′UTR and noncoding-exon binding.</li>
+<li><strong>Axis meaning:</strong> the arrow labels come from the region loadings (<code>analysis/results/tables/pca_loadings.tsv</code>).
+<ul>
+<li>PC1: positive for proximal and distal intron, negative for CDS.</li>
+<li>PC2: positive for 5′UTR and small ncRNA, negative for 3′UTR and distal intron.</li>
+</ul></li>
+<li><strong>Points:</strong> each point is one experiment, in the same position in every panel.</li>
+<li><strong>Caveat:</strong> the categories were assigned from the same region profiles, so some separation is expected by construction. The figure shows where the categories sit within the continuous variation.</li>
+</ul>
+<p>Script: <code>analysis/R/05_binding_landscape_figures.R</code>; data: <code>analysis/results/tables/pca_variance.tsv</code>, <code>pca_loadings.tsv</code>.</p>
+</details>
+</section>
+<section id="how-similar-are-the-experiments" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="how-similar-are-the-experiments">How similar are the experiments?</h2>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="../results/figures/aim1_landscape_d_similarity.png" class="img-fluid figure-img column-page-left"></p>
+<figcaption><strong>Figure 4. The same RBP has very similar binding profiles in both cell lines.</strong> Left: correlation between the binding profiles of all experiments, grouped by main category. Right: the RBPs profiled in both cell lines (K562 rows, HepG2 columns, same order); the outlined diagonal pairs each RBP with itself.</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>Similarity:</strong> Pearson correlation between two experiments’ 7-value z-scored region profiles (Figure 2). Red = similar, blue = opposite profiles.</li>
+<li><strong>Left (231 × 231 experiments):</strong> rows and columns are grouped by main category. Within each category they are ordered by average-linkage hierarchical clustering on 1 − r. Side bars show category and cell line.</li>
+<li><strong>Right (70 RBPs with ≥ 100 peaks in both lines):</strong> rows are K562 experiments, columns the HepG2 experiment of the same RBP, in the same order, so the diagonal (outlined) compares each RBP with itself. Where an RBP has two K562 experiments, the first listed is used. About ten well-studied RBPs are labelled.</li>
+<li><strong>Result:</strong> same-RBP median r = 0.89; different RBPs median r = -0.01.</li>
+</ul>
+<p>Script: <code>analysis/R/05_binding_landscape_figures.R</code>.</p>
+</details>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="../results/figures/aim1_landscape_e_concordance.png" class="img-fluid figure-img column-page-left"></p>
+<figcaption><strong>Figure 5. Binding profiles are reproducible across cell lines.</strong> Left: profile distance between an RBP’s K562 and HepG2 experiments (blue) compared with all pairs of different RBPs (grey). Right: how often the main category agrees between the two lines.</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>Distance:</strong> Euclidean distance between two experiments’ z-scored region profiles.</li>
+<li><strong>Left:</strong>
+<ul>
+<li>grey histogram: all 4,830 K562–HepG2 pairs of <em>different</em> RBPs (mean 3.50);</li>
+<li>blue ticks: the 70 same-RBP pairs (mean 1.54);</li>
+<li>vertical lines: the two means.</li>
+</ul></li>
+<li><strong>Test:</strong> permutation test (10,000 random re-pairings of K562 and HepG2 experiments, one-sided), p &lt; 0.001.</li>
+<li><strong>Right:</strong> cross-tabulation of main category in K562 (rows) and HepG2 (columns) for the 70 RBPs; the diagonal (outlined) means agreement.
+<ul>
+<li>The category agrees in 46 of 70.</li>
+<li>Most disagreements involve “no clear preference”: an experiment near the 0.25 log2 cut-off can fall on either side in the two lines even when the profiles are similar.</li>
+</ul></li>
+</ul>
+<p>Script: <code>analysis/R/05_binding_landscape_figures.R</code>; data: <code>analysis/results/tables/concordance.tsv</code>, <code>category_concordance.tsv</code>.</p>
+</details>
+</section>
+<section id="key-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaways">Key takeaways</h2>
+<ol type="1">
+<li><strong>Most RBPs have a clear main binding region.</strong> 206 of 231 experiments favour one region group:
+<ul>
+<li>CDS 44, 3′UTR 35, 5′UTR 13;</li>
+<li>ncRNA 33;</li>
+<li>splice-site intron 28, deep intron 53.</li>
+</ul>
+Proteins with known roles land where expected (e.g.&nbsp;RBFOX2 and U2AF2 near splice sites, PUM2 and UPF1 in 3′UTRs).</li>
+<li><strong>Binding location points to function:</strong>
+<ul>
+<li>splice-site and deep-intron binders: pre-mRNA processing;</li>
+<li>3′UTR binders: mRNA stability;</li>
+<li>5′UTR binders: translation;</li>
+<li>ncRNA binders: small-RNA processing.</li>
+</ul></li>
+<li><strong>Binding profiles form a continuum, not discrete classes.</strong> Two axes, introns vs coding sequence and 5′UTR/small RNA vs 3′UTR, explain 56% of the variation; clustering found no natural groups.</li>
+<li><strong>A binding profile is a property of the protein.</strong> The same RBP’s K562 and HepG2 profiles correlate with median r = 0.89 (different RBPs: -0.01), and their distance is less than half that between different RBPs (1.54 vs 3.50, p &lt; 0.001).</li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/victortong7\.github\.io\/encode-eclip-atlas\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Victor Tong · public ENCODE data (hg19 / GENCODE V19)</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/VictorTong7/encode-eclip-atlas/blob/main/analysis/report/binding.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Built with R, Python and Quarto</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

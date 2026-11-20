@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>The data – ENCODE eCLIP Atlas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-48eea8e06ff06eb442a2daacfce5ac08.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../report/report.css">
+</head>
+
+<body class="nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">ENCODE eCLIP Atlas</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Overview</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../report/data.html" aria-current="page"> 
+<span class="menu-text">The data</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../report/binding.html"> 
+<span class="menu-text">Where RBPs bind</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../report/cross-cell.html"> 
+<span class="menu-text">Cell lines</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../report/methods.html"> 
+<span class="menu-text">Methods</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-was-profiled" id="toc-what-was-profiled" class="nav-link active" data-scroll-target="#what-was-profiled">What was profiled?</a></li>
+  <li><a href="#how-deep-is-each-experiment" id="toc-how-deep-is-each-experiment" class="nav-link" data-scroll-target="#how-deep-is-each-experiment">How deep is each experiment?</a></li>
+  <li><a href="#what-do-the-peaks-look-like" id="toc-what-do-the-peaks-look-like" class="nav-link" data-scroll-target="#what-do-the-peaks-look-like">What do the peaks look like?</a></li>
+  <li><a href="#do-many-rbps-bind-the-same-genes" id="toc-do-many-rbps-bind-the-same-genes" class="nav-link" data-scroll-target="#do-many-rbps-bind-the-same-genes">Do many RBPs bind the same genes?</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways">Key takeaways</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/VictorTong7/encode-eclip-atlas/blob/main/analysis/report/data.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">The data</h1>
+<p class="subtitle lead">What was profiled, how deep the experiments are, and what the peaks look like</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>eCLIP</strong> (enhanced crosslinking and immunoprecipitation) involves first linking proteins to the RNA they interact with inside living cells, then purifying an RBP along with the bound RNA. Sequencing the RNA allows researchers to identify where the binding sites of the RBP were in the cell.<br>
+<br>
+Each experiment yields a set of reproducible binding sites (“peaks”) for one RBP. All data come from one lab (Yeo lab at UCSD) and was downloaded from the ENCODE Project repository.</p>
+<section id="what-was-profiled" class="level2">
+<h2 class="anchored" data-anchor-id="what-was-profiled">What was profiled?</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../results/figures/aim1_overview_a_profiled.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption><strong>Figure 1. Most profiled RBPs also have a knockdown experiment.</strong> Datasets available for each of the 168 RBPs. 128 RBPs have eCLIP and a knockdown in the same cell line, which the regulation analysis (in progress) needs; 34 have cell-free binding data, used in the sequence analysis (in progress).</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<p>UpSet plot of data availability per RBP.</p>
+<ul>
+<li><strong>Rows:</strong> five datasets.
+<ul>
+<li>eCLIP in K562 (139 RBPs) and in HepG2 (105);</li>
+<li>shRNA knockdown RNA-seq in K562 (101) and in HepG2 (83);</li>
+<li>RNA Bind-n-Seq, a cell-free binding assay (34).</li>
+</ul></li>
+<li><strong>Bars:</strong> the number of RBPs with exactly the combination of datasets marked by the connected dots below. Combinations held by a single RBP are not shown. Right-hand bars give each dataset’s total.</li>
+<li><strong>Knockdowns:</strong> only shRNA knockdowns with hg19 / GENCODE V19 gene quantifications and exactly one matched control are counted. CRISPRi knockdowns are excluded.</li>
+<li><strong>eCLIP data:</strong> 250 replicate-merged IDR peak files.
+<ul>
+<li>27 experiments were available only on GRCh38 and were lifted over to hg19.</li>
+<li>6 RBP × cell line pairs have two independent experiments.</li>
+</ul></li>
+</ul>
+<p>Script: <code>analysis/R/05_dataset_overview_figures.R</code>; data: <code>analysis/results/tables/rbp_availability.tsv</code>.</p>
+</details>
+</section>
+<section id="how-deep-is-each-experiment" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="how-deep-is-each-experiment">How deep is each experiment?</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../results/figures/aim1_overview_b_peaks_per_experiment.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption><strong>Figure 2. Experiment depth varies over three orders of magnitude.</strong> Number of peaks per eCLIP experiment, ranked. Dashed lines mark the minimum depth used for binding profiles (100 peaks) and for sequence models (1,000 peaks).</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>Points:</strong> each point is one eCLIP experiment (n = 250), coloured by cell line. Open circles are experiments lifted over from GRCh38.</li>
+<li><strong>Peaks:</strong> reproducible (IDR) peaks as released by ENCODE. ENCODE’s thresholds are log2 enrichment over size-matched input ≥ 3 and −log10 p ≥ 3; only canonical chromosomes are kept.</li>
+<li><strong>Range:</strong> 9 to 32,718 peaks per experiment (median 1,764). The y-axis is log-scaled.</li>
+<li><strong>Exclusions:</strong> 19 experiments fall below 100 peaks and are excluded from binding profiles; 94 fall below 1,000 and are excluded from sequence models.</li>
+</ul>
+<p>Script: <code>analysis/R/05_dataset_overview_figures.R</code>; data: <code>analysis/results/tables/dataset_overview.tsv</code>.</p>
+</details>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="../results/figures/aim1_overview_d_batch.png" class="img-fluid figure-img column-page-left"></p>
+<figcaption><strong>Figure 3. Later K562 experiments are shallower, but peak strength is stable.</strong> Peaks per experiment (left) and median peak enrichment (right) by release year and cell line. Bars mark medians.</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>Points:</strong> each point is one experiment, placed by its ENCODE release year. ENCODE3 experiments were released 2015–2018 (K562 n = 90, HepG2 n = 78); ENCODE4 experiments 2018–2023 (K562 n = 55, HepG2 n = 27).</li>
+<li><strong>Left:</strong> peaks per experiment (log scale).</li>
+<li><strong>Right:</strong> median log2 enrichment of each experiment’s peaks.</li>
+<li><strong>Bars:</strong> medians per year and cell line.</li>
+<li><strong>Tests:</strong> ENCODE3 vs ENCODE4, two-sided Wilcoxon rank-sum test within each cell line.
+<ul>
+<li>Depth: K562 p = 0.012 (median 2,132 vs 755 peaks); HepG2 p = 0.531.</li>
+<li>Peak strength: K562 p = 0.250; HepG2 p = 0.357.</li>
+</ul></li>
+<li><strong>Batch:</strong> all experiments come from the same lab, so release phase is the main batch variable.</li>
+</ul>
+<p>Script: <code>analysis/R/05_dataset_overview_figures.R</code>; data: <code>analysis/results/tables/batch_tests.tsv</code>.</p>
+</details>
+</section>
+<section id="what-do-the-peaks-look-like" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="what-do-the-peaks-look-like">What do the peaks look like?</h2>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="../results/figures/aim1_overview_c_peak_properties.png" class="img-fluid figure-img column-page-left"></p>
+<figcaption><strong>Figure 4. Peaks are short and most sit just above ENCODE’s significance thresholds.</strong> Distributions of peak width, enrichment and significance over all peaks, by cell line.</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>Data:</strong> all 935,151 peaks from 250 experiments. Curves are density-scaled frequency polygons (60 bins) for each cell line.</li>
+<li><strong>Left:</strong> peak width in nucleotides (log scale).</li>
+<li><strong>Middle:</strong> log2 enrichment of the immunoprecipitation over size-matched input; the dashed line is ENCODE’s cut-off of 3.</li>
+<li><strong>Right:</strong> −log10 p (log scale); the dashed line is the cut-off of 3. ENCODE caps −log10 p at 400, which produces the spike at the right.</li>
+<li><strong>Summits:</strong> the peak files have no summit positions, so analyses place each peak at its midpoint.</li>
+</ul>
+<p>Script: <code>analysis/R/05_dataset_overview_figures.R</code>.</p>
+</details>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="../results/figures/aim1_overview_e_genes_per_experiment.png" class="img-fluid figure-img column-page-left"></p>
+<figcaption><strong>Figure 5. Most RBPs bind hundreds to thousands of genes, almost all of them expressed.</strong> Left: bound genes against peaks per experiment. Right: share of each experiment’s peaks on expressed genes and outside annotated genes.</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>Points:</strong> each point is one experiment (n = 250).</li>
+<li><strong>Bound gene:</strong> a gene with at least one peak. Each peak is assigned to one gene and region by its midpoint, using the region priority CDS &gt; 3′UTR &gt; 5′UTR &gt; small ncRNA &gt; noncoding exon &gt; proximal intron &gt; distal intron; ties between genes go to the more highly expressed gene.</li>
+<li><strong>Left:</strong> the dashed line marks one peak per gene. Median 684 bound genes and 2.5 peaks per bound gene. Both axes are log-scaled.</li>
+<li><strong>Right:</strong> share of each experiment’s peaks on expressed genes (median 95%) and in intergenic sequence (median 3.5%). Bars mark medians.
+<ul>
+<li>Expressed = median TPM ≥ 1 across that cell line’s control RNA-seq samples. Small ncRNAs, which standard RNA-seq can’t measure, always count as expressed.</li>
+</ul></li>
+</ul>
+<p>Script: <code>analysis/R/05_dataset_overview_figures.R</code>; data: <code>analysis/results/tables/dataset_overview.tsv</code>.</p>
+</details>
+</section>
+<section id="do-many-rbps-bind-the-same-genes" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="do-many-rbps-bind-the-same-genes">Do many RBPs bind the same genes?</h2>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="../results/figures/aim1_overview_f_shared_genes.png" class="img-fluid figure-img column-page-left"></p>
+<figcaption><strong>Figure 6. Highly expressed genes are bound by many RBPs.</strong> Top left: share of RBPs binding each expressed gene. Top right: the most widely bound (“hub”) genes. Bottom: RBPs per gene against expression and gene length.</figcaption>
+</figure>
+</div>
+<details class="legend-more">
+<summary>
+Extended legend
+</summary>
+<ul>
+<li><strong>Genes:</strong> annotated, expressed genes (median control TPM ≥ 1; small ncRNAs excluded): K562 n = 11,815, HepG2 n = 12,517.</li>
+<li><strong>Bound:</strong> a gene counts as bound by an RBP if any of that RBP’s experiments in the cell line has a peak in it. All 250 experiments are used; K562 has 139 RBPs and HepG2 105.</li>
+<li><strong>Top left:</strong> distribution of the share of RBPs binding each gene (density, bins of 2.5%). 16% of genes are bound by none.</li>
+<li><strong>Top right:</strong> the 15 genes with the highest mean share across the two lines, among genes expressed in both.</li>
+<li><strong>Bottom:</strong> 2-D histograms of RBPs per gene against control expression (TPM) and gene length (first to last annotated base). Colour = number of genes (log scale).</li>
+<li><strong>Statistics:</strong> Spearman ρ with expression ≈ 0.70 (mean of the two lines). In a joint linear model of standardised RBP count on log TPM and log length, expression has about twice the weight of length.</li>
+</ul>
+<p>Script: <code>analysis/R/05_dataset_overview_figures.R</code>; data: <code>analysis/results/tables/gene_rbp_counts.tsv</code>.</p>
+</details>
+</section>
+<section id="key-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaways">Key takeaways</h2>
+<ol type="1">
+<li><strong>A matched, multi-assay dataset.</strong> 168 RBPs were profiled by eCLIP in two cell lines. 128 also have a knockdown in the same cell line and 34 have cell-free binding data, so binding can be linked to function and to intrinsic sequence preference.</li>
+<li><strong>Depth is the main technical variable.</strong> Experiments range from 9 to 32,718 peaks. Later (ENCODE4) K562 experiments are shallower (median 755 vs 2,132 peaks, p = 0.012), while peak strength does not differ by phase. Minimum-depth filters remove 19 experiments from binding profiles and 94 from sequence models.</li>
+<li><strong>Peaks are short and modestly enriched.</strong> Most peaks are tens of nucleotides wide and sit just above ENCODE’s cut-offs, so binding is called at moderate enrichment.</li>
+<li><strong>eCLIP detection follows expression.</strong> Almost all peaks fall on expressed genes, and the number of RBPs binding a gene tracks its expression (ρ ≈ 0.70) much more than its length. “Hub” genes are mainly abundant transcripts, so comparisons between bound and unbound genes need expression matching.</li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/victortong7\.github\.io\/encode-eclip-atlas\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Victor Tong · public ENCODE data (hg19 / GENCODE V19)</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/VictorTong7/encode-eclip-atlas/blob/main/analysis/report/data.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Built with R, Python and Quarto</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

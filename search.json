@@ -1,0 +1,163 @@
+[
+  {
+    "objectID": "report/methods.html",
+    "href": "report/methods.html",
+    "title": "Methods",
+    "section": "",
+    "text": "All data are public ENCODE files:\n\neCLIP IDR peaks (250 experiments, 168 RBPs, K562 and HepG2);\ncontrol RNA-seq gene quantifications, used to define expressed genes;\nknockdown RNA-seq and RNA Bind-n-Seq metadata, used to describe what was profiled;\nhg19 genome and GENCODE V19 annotation.\n\n27 newer experiments exist only on GRCh38 and were lifted over to hg19. A download manifest records every file’s accession and MD5 checksum.\n\n\n\n\n\n\nflowchart LR\n  A[ENCODE API&lt;br/&gt;manifest + download&lt;br/&gt;MD5-checked] --&gt; B[Liftover and&lt;br/&gt;region annotation&lt;br/&gt;GENCODE V19]\n  B --&gt; C[Automated&lt;br/&gt;consistency checks]\n  B --&gt; D[The data]\n  B --&gt; E[Where RBPs bind]\n  E --&gt; F[Same binding in&lt;br/&gt;both cell lines?]\n\n\n\n\n\n\nTools:\n\nR and Bioconductor: GenomicRanges, GenomicFeatures, rtracklayer, ComplexHeatmap, ggplot2, patchwork;\nPython: pandas, requests and pyfaidx for the download pipeline and checks;\nQuarto for this site.\n\nEvery number on these pages is computed from saved result tables when the site is built, and each figure caption names the script that made the figure."
+  },
+  {
+    "objectID": "report/methods.html#data-and-approach",
+    "href": "report/methods.html#data-and-approach",
+    "title": "Methods",
+    "section": "",
+    "text": "All data are public ENCODE files:\n\neCLIP IDR peaks (250 experiments, 168 RBPs, K562 and HepG2);\ncontrol RNA-seq gene quantifications, used to define expressed genes;\nknockdown RNA-seq and RNA Bind-n-Seq metadata, used to describe what was profiled;\nhg19 genome and GENCODE V19 annotation.\n\n27 newer experiments exist only on GRCh38 and were lifted over to hg19. A download manifest records every file’s accession and MD5 checksum.\n\n\n\n\n\n\nflowchart LR\n  A[ENCODE API&lt;br/&gt;manifest + download&lt;br/&gt;MD5-checked] --&gt; B[Liftover and&lt;br/&gt;region annotation&lt;br/&gt;GENCODE V19]\n  B --&gt; C[Automated&lt;br/&gt;consistency checks]\n  B --&gt; D[The data]\n  B --&gt; E[Where RBPs bind]\n  E --&gt; F[Same binding in&lt;br/&gt;both cell lines?]\n\n\n\n\n\n\nTools:\n\nR and Bioconductor: GenomicRanges, GenomicFeatures, rtracklayer, ComplexHeatmap, ggplot2, patchwork;\nPython: pandas, requests and pyfaidx for the download pipeline and checks;\nQuarto for this site.\n\nEvery number on these pages is computed from saved result tables when the site is built, and each figure caption names the script that made the figure."
+  },
+  {
+    "objectID": "report/methods.html#decisions-and-checks",
+    "href": "report/methods.html#decisions-and-checks",
+    "title": "Methods",
+    "section": "Decisions and checks",
+    "text": "Decisions and checks\n\n\n\n\n\n\n\n\nProblem found\nWhat I did\nEffect on conclusions\n\n\n\n\nAnalyses needed compatibility with earlier hg19 work, but 27 newer experiments exist only on GRCh38\nUsed native hg19 files and lifted the others over, keeping only one-to-one, same-strand mappings (median 0.6% of peaks lost)\nKept all 168 RBPs\n\n\nLength-normalised enrichment ranked RBFOX2’s top region as 5′UTR\nRecognised that intronic RNA is short-lived; compared each RBP against all others\nTop regions now match known biology\n\n\nClustering RBPs by binding profile gave weak, unstable clusters\nGrouped RBPs by main binding region instead, with a “no clear preference” group\nGroups are transparent and interpretable\n\n\nSite-sharing metric was inflated by unequal peak counts\nReplaced it with a depth-matched metric\nRemoved a spurious “peak-count imbalance” association\n\n\neCLIP detects binding mostly on abundant transcripts\nRestricted cross-cell comparisons to genes expressed in both lines and explained one-line-only peaks by expression\nSeparated real cell-type differences from expression differences\n\n\nENCODE temporarily blocked downloads part-way through\nRate-limited, resumable, MD5-checked downloader that stops on repeated refusals\nAll files verified\n\n\nSilent errors in a multi-step pipeline are easy to miss\nAutomated pre-processing checks: file checksums, peak counts and thresholds, annotation consistency and known biology (e.g. RBFOX2 binds near splice sites)\nPre-processing re-verified after every change"
+  },
+  {
+    "objectID": "report/methods.html#limitations",
+    "href": "report/methods.html#limitations",
+    "title": "Methods",
+    "section": "Limitations",
+    "text": "Limitations\n\nTwo cell lines, one time point: cell-type comparisons cover only K562 and HepG2.\nSensitivity: eCLIP sensitivity scales with expression, so weak sites on rare transcripts are missed.\nPeak calls: ENCODE’s IDR peaks are used as given. About 16% overlap or abut another peak of the same experiment, and peaks are placed by their midpoint, so peaks straddling exon–intron boundaries can be assigned to either side.\nRegion categories: an experiment’s main region is a coarse label on a continuous profile; experiments near the cut-off can change category between cell lines."
+  },
+  {
+    "objectID": "report/methods.html#reproducibility",
+    "href": "report/methods.html#reproducibility",
+    "title": "Methods",
+    "section": "Reproducibility",
+    "text": "Reproducibility\n\n\n\n\n\n\n\n\nStep\nScripts\nRuntime\n\n\n\n\nDownload (ENCODE API) and liftover\npreprocess/python/01–02, preprocess/R/02b\n~15 min\n\n\nRegion annotation and peak assignment\npreprocess/R/03–04, preprocess/python/05a\n~3 min\n\n\nConsistency checks\npreprocess/checks/\n~2 min\n\n\nThe data\nanalysis/R/05_dataset_overview*.R\n&lt;1 min\n\n\nWhere RBPs bind\nanalysis/R/05_binding_landscape*.R\n&lt;1 min\n\n\nCell lines\nanalysis/R/05b–05c\n~8 min\n\n\nThis site\nquarto render analysis\n~1 min\n\n\n\nEnvironment: R 4.6 + Bioconductor 3.23 (preprocess/R/00_install_packages.R); Python 3 (requirements.txt). Raw data (5.6 GB) are not stored in the repository; the scripts download and verify them."
+  },
+  {
+    "objectID": "report/binding.html",
+    "href": "report/binding.html",
+    "title": "Where RBPs bind",
+    "section": "",
+    "text": "Each peak was assigned to one transcript region by its midpoint: coding sequence (CDS), 3′UTR, 5′UTR, small ncRNA, noncoding exon, proximal intron (≤ 500 nt from a splice site) or distal intron. An experiment’s main binding category is the region where its share of peaks is highest relative to the average RBP. Raw shares would mostly reflect region length."
+  },
+  {
+    "objectID": "report/binding.html#each-rbp-has-a-main-binding-region",
+    "href": "report/binding.html#each-rbp-has-a-main-binding-region",
+    "title": "Where RBPs bind",
+    "section": "Each RBP has a main binding region",
+    "text": "Each RBP has a main binding region\n\n\n\nFigure 1. Each main binding category is dominated by its own region. Mean share of peaks per transcript region for the experiments in each category. 25 of 231 experiments have no clear preference.\n\n\n\n\nExtended legend\n\n\nExperiments: 231 eCLIP experiments with ≥ 100 peaks; peaks on expressed genes only.\nCategory rule: for each region, the experiment’s peak share is compared with the mean share across all experiments in the same cell line (log2 ratio). The category is the group of the highest-scoring region.\n\nGroups: CDS; 3′UTR; 5′UTR; ncRNA (small ncRNA + noncoding exon); splice-site intron (proximal intron); deep intron (distal intron).\nAn experiment whose best group leads the next by &lt; 0.25 log2 (&lt; 1.19×) is labelled “no clear preference”.\n\nCategory sizes: CDS 44, 3′UTR 35, 5′UTR 13, ncRNA 33, splice-site intron 28, deep intron 53, no clear preference 25.\nBars: each bar shows the mean share of peaks in each of the 7 regions, averaged over the category’s experiments and normalised to 100%. Labels are shown for segments ≥ 8%.\n\nScript: analysis/R/05_binding_landscape_figures.R; data: analysis/results/tables/rbp_categories.tsv.\n\n\n\n\nFigure 2. Region enrichment of every experiment. Rows are experiments grouped by main category; columns are transcript regions. Red = more enriched than the average experiment, blue = less.\n\n\n\n\nExtended legend\n\n\nEnrichment: for each experiment and region, log2 of the region’s share of peaks (on expressed genes) divided by the region’s share of the expressed transcriptome’s length in that cell line.\nScaling: values are z-scored per region across the 231 experiments and capped at ±3. Z-scoring removes the region-wide length effect, under which introns look depleted for every RBP.\nRow order: grouped by main category, strongest preference (largest lead) first.\nRight-hand annotations: cell line, peak count (log scale) and selected well-studied RBPs.\n\nScript: analysis/R/05_binding_landscape_figures.R; data: analysis/results/tables/rbp_clusters.tsv (z-scores)."
+  },
+  {
+    "objectID": "report/binding.html#two-axes-describe-most-of-the-variation",
+    "href": "report/binding.html#two-axes-describe-most-of-the-variation",
+    "title": "Where RBPs bind",
+    "section": "Two axes describe most of the variation",
+    "text": "Two axes describe most of the variation\nA principal component analysis (PCA) of the seven region scores combines them into a few independent axes. Each axis is ranked by how much of the difference between experiments it captures. The first two capture 56%:\n\nPC1 (32%) separates intron binders from coding-sequence binders. RBPs that bind near splice sites or deep in introns sit on the right; RBPs that bind within the coding sequence sit on the left.\nPC2 (24%) separates the 5′ end and small RNAs from the 3′ end. RBPs that favour 5′UTRs and small non-coding RNAs (snoRNAs, snRNAs) sit at the top; RBPs that favour 3′UTRs and deep introns sit at the bottom.\n\n\n\n\nFigure 3. Each binding category occupies its own part of the map. All experiments on the first two principal components; each panel highlights one main binding category in colour (grey = all others).\n\n\n\n\nExtended legend\n\n\nPCA: run on the 231 × 7 matrix of z-scored region enrichments (Figure 2), centred, without further scaling (prcomp in R).\nVariance explained: PC1 32%, PC2 24%, PC3 14%. PC3 is not shown; it mainly separates 3′UTR and noncoding-exon binding.\nAxis meaning: the arrow labels come from the region loadings (analysis/results/tables/pca_loadings.tsv).\n\nPC1: positive for proximal and distal intron, negative for CDS.\nPC2: positive for 5′UTR and small ncRNA, negative for 3′UTR and distal intron.\n\nPoints: each point is one experiment, in the same position in every panel.\nCaveat: the categories were assigned from the same region profiles, so some separation is expected by construction. The figure shows where the categories sit within the continuous variation.\n\nScript: analysis/R/05_binding_landscape_figures.R; data: analysis/results/tables/pca_variance.tsv, pca_loadings.tsv."
+  },
+  {
+    "objectID": "report/binding.html#how-similar-are-the-experiments",
+    "href": "report/binding.html#how-similar-are-the-experiments",
+    "title": "Where RBPs bind",
+    "section": "How similar are the experiments?",
+    "text": "How similar are the experiments?\n\n\n\nFigure 4. The same RBP has very similar binding profiles in both cell lines. Left: correlation between the binding profiles of all experiments, grouped by main category. Right: the RBPs profiled in both cell lines (K562 rows, HepG2 columns, same order); the outlined diagonal pairs each RBP with itself.\n\n\n\n\nExtended legend\n\n\nSimilarity: Pearson correlation between two experiments’ 7-value z-scored region profiles (Figure 2). Red = similar, blue = opposite profiles.\nLeft (231 × 231 experiments): rows and columns are grouped by main category. Within each category they are ordered by average-linkage hierarchical clustering on 1 − r. Side bars show category and cell line.\nRight (70 RBPs with ≥ 100 peaks in both lines): rows are K562 experiments, columns the HepG2 experiment of the same RBP, in the same order, so the diagonal (outlined) compares each RBP with itself. Where an RBP has two K562 experiments, the first listed is used. About ten well-studied RBPs are labelled.\nResult: same-RBP median r = 0.89; different RBPs median r = -0.01.\n\nScript: analysis/R/05_binding_landscape_figures.R.\n\n\n\n\nFigure 5. Binding profiles are reproducible across cell lines. Left: profile distance between an RBP’s K562 and HepG2 experiments (blue) compared with all pairs of different RBPs (grey). Right: how often the main category agrees between the two lines.\n\n\n\n\nExtended legend\n\n\nDistance: Euclidean distance between two experiments’ z-scored region profiles.\nLeft:\n\ngrey histogram: all 4,830 K562–HepG2 pairs of different RBPs (mean 3.50);\nblue ticks: the 70 same-RBP pairs (mean 1.54);\nvertical lines: the two means.\n\nTest: permutation test (10,000 random re-pairings of K562 and HepG2 experiments, one-sided), p &lt; 0.001.\nRight: cross-tabulation of main category in K562 (rows) and HepG2 (columns) for the 70 RBPs; the diagonal (outlined) means agreement.\n\nThe category agrees in 46 of 70.\nMost disagreements involve “no clear preference”: an experiment near the 0.25 log2 cut-off can fall on either side in the two lines even when the profiles are similar.\n\n\nScript: analysis/R/05_binding_landscape_figures.R; data: analysis/results/tables/concordance.tsv, category_concordance.tsv."
+  },
+  {
+    "objectID": "report/binding.html#key-takeaways",
+    "href": "report/binding.html#key-takeaways",
+    "title": "Where RBPs bind",
+    "section": "Key takeaways",
+    "text": "Key takeaways\n\nMost RBPs have a clear main binding region. 206 of 231 experiments favour one region group:\n\nCDS 44, 3′UTR 35, 5′UTR 13;\nncRNA 33;\nsplice-site intron 28, deep intron 53.\n\nProteins with known roles land where expected (e.g. RBFOX2 and U2AF2 near splice sites, PUM2 and UPF1 in 3′UTRs).\nBinding location points to function:\n\nsplice-site and deep-intron binders: pre-mRNA processing;\n3′UTR binders: mRNA stability;\n5′UTR binders: translation;\nncRNA binders: small-RNA processing.\n\nBinding profiles form a continuum, not discrete classes. Two axes, introns vs coding sequence and 5′UTR/small RNA vs 3′UTR, explain 56% of the variation; clustering found no natural groups.\nA binding profile is a property of the protein. The same RBP’s K562 and HepG2 profiles correlate with median r = 0.89 (different RBPs: -0.01), and their distance is less than half that between different RBPs (1.54 vs 3.50, p &lt; 0.001)."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ENCODE eCLIP Atlas",
+    "section": "",
+    "text": "RNA-binding proteins (RBPs) control many aspects of RNAs: how it’s processed, where it goes, how long it lasts, how much protein it makes. Thus, one important aspect of RBP biology is to identify what RNAs a RBP binds to. This project analyses 250 public ENCODE eCLIP experiments, which map the binding sites of 168 RBPs in two human cell lines (K562 and HepG2). It then combines these results with the change in RNA level after depletion of the RBPs.\n\nIt asks two core questions: where do RBPs bind on each RNA and whether binding predicts how RNA levels change when the protein is removed. This site presents the answer to the first question; the second is in progress."
+  },
+  {
+    "objectID": "index.html#key-findings",
+    "href": "index.html#key-findings",
+    "title": "ENCODE eCLIP Atlas",
+    "section": "Key findings",
+    "text": "Key findings\n\nMost RBPs have a clear main binding region. All 935,151 binding sites were assigned to transcript regions. 206 of 231 experiments have one main region (splice-site or deep intron, coding sequence, 3′UTR, 5′UTR or ncRNA), and proteins with known roles land where expected. → Where RBPs bind\nBinding is mostly a property of the protein, not the cell. The same RBP binds the same sites in both cell lines far more often than different RBPs do: median depth-matched site sharing 0.22, against 0.004 for similar RBPs. Most remaining differences come from which genes each cell line expresses, or from ordinary experiment-to-experiment noise. → Cell lines\neCLIP detection follows expression. The number of RBPs binding a gene tracks its expression (Spearman ρ ≈ 0.70) much more than its length, so any comparison of bound and unbound genes needs expression matching. → The data\nDepth is the main technical variable. Experiments range from 9 to 32,718 peaks, and later (ENCODE4) K562 experiments are shallower. Comparisons are depth-matched wherever peak counts matter. → The data"
+  },
+  {
+    "objectID": "index.html#how-this-site-is-organised",
+    "href": "index.html#how-this-site-is-organised",
+    "title": "ENCODE eCLIP Atlas",
+    "section": "How this site is organised",
+    "text": "How this site is organised\n\n\n\nPage\nQuestion\n\n\n\n\nThe data\nWhat was profiled, how deep are the experiments, and what do the peaks look like?\n\n\nWhere RBPs bind\nWhich transcript regions does each RBP bind, and how similar are RBPs?\n\n\nCell lines\nDoes an RBP bind the same sites in two different cell types?\n\n\nMethods\nData, pipeline, the checks that changed conclusions, limitations, how to reproduce\n\n\n\nAll numbers on this site are computed from the saved result tables when the site is built. The code (R and Python) is in the project’s GitHub repository."
+  },
+  {
+    "objectID": "report/data.html",
+    "href": "report/data.html",
+    "title": "The data",
+    "section": "",
+    "text": "eCLIP (enhanced crosslinking and immunoprecipitation) involves first linking proteins to the RNA they interact with inside living cells, then purifying an RBP along with the bound RNA. Sequencing the RNA allows researchers to identify where the binding sites of the RBP were in the cell.\n\nEach experiment yields a set of reproducible binding sites (“peaks”) for one RBP. All data come from one lab (Yeo lab at UCSD) and was downloaded from the ENCODE Project repository."
+  },
+  {
+    "objectID": "report/data.html#what-was-profiled",
+    "href": "report/data.html#what-was-profiled",
+    "title": "The data",
+    "section": "What was profiled?",
+    "text": "What was profiled?\n\n\n\nFigure 1. Most profiled RBPs also have a knockdown experiment. Datasets available for each of the 168 RBPs. 128 RBPs have eCLIP and a knockdown in the same cell line, which the regulation analysis (in progress) needs; 34 have cell-free binding data, used in the sequence analysis (in progress).\n\n\n\n\nExtended legend\n\nUpSet plot of data availability per RBP.\n\nRows: five datasets.\n\neCLIP in K562 (139 RBPs) and in HepG2 (105);\nshRNA knockdown RNA-seq in K562 (101) and in HepG2 (83);\nRNA Bind-n-Seq, a cell-free binding assay (34).\n\nBars: the number of RBPs with exactly the combination of datasets marked by the connected dots below. Combinations held by a single RBP are not shown. Right-hand bars give each dataset’s total.\nKnockdowns: only shRNA knockdowns with hg19 / GENCODE V19 gene quantifications and exactly one matched control are counted. CRISPRi knockdowns are excluded.\neCLIP data: 250 replicate-merged IDR peak files.\n\n27 experiments were available only on GRCh38 and were lifted over to hg19.\n6 RBP × cell line pairs have two independent experiments.\n\n\nScript: analysis/R/05_dataset_overview_figures.R; data: analysis/results/tables/rbp_availability.tsv."
+  },
+  {
+    "objectID": "report/data.html#how-deep-is-each-experiment",
+    "href": "report/data.html#how-deep-is-each-experiment",
+    "title": "The data",
+    "section": "How deep is each experiment?",
+    "text": "How deep is each experiment?\n\n\n\nFigure 2. Experiment depth varies over three orders of magnitude. Number of peaks per eCLIP experiment, ranked. Dashed lines mark the minimum depth used for binding profiles (100 peaks) and for sequence models (1,000 peaks).\n\n\n\n\nExtended legend\n\n\nPoints: each point is one eCLIP experiment (n = 250), coloured by cell line. Open circles are experiments lifted over from GRCh38.\nPeaks: reproducible (IDR) peaks as released by ENCODE. ENCODE’s thresholds are log2 enrichment over size-matched input ≥ 3 and −log10 p ≥ 3; only canonical chromosomes are kept.\nRange: 9 to 32,718 peaks per experiment (median 1,764). The y-axis is log-scaled.\nExclusions: 19 experiments fall below 100 peaks and are excluded from binding profiles; 94 fall below 1,000 and are excluded from sequence models.\n\nScript: analysis/R/05_dataset_overview_figures.R; data: analysis/results/tables/dataset_overview.tsv.\n\n\n\n\nFigure 3. Later K562 experiments are shallower, but peak strength is stable. Peaks per experiment (left) and median peak enrichment (right) by release year and cell line. Bars mark medians.\n\n\n\n\nExtended legend\n\n\nPoints: each point is one experiment, placed by its ENCODE release year. ENCODE3 experiments were released 2015–2018 (K562 n = 90, HepG2 n = 78); ENCODE4 experiments 2018–2023 (K562 n = 55, HepG2 n = 27).\nLeft: peaks per experiment (log scale).\nRight: median log2 enrichment of each experiment’s peaks.\nBars: medians per year and cell line.\nTests: ENCODE3 vs ENCODE4, two-sided Wilcoxon rank-sum test within each cell line.\n\nDepth: K562 p = 0.012 (median 2,132 vs 755 peaks); HepG2 p = 0.531.\nPeak strength: K562 p = 0.250; HepG2 p = 0.357.\n\nBatch: all experiments come from the same lab, so release phase is the main batch variable.\n\nScript: analysis/R/05_dataset_overview_figures.R; data: analysis/results/tables/batch_tests.tsv."
+  },
+  {
+    "objectID": "report/data.html#what-do-the-peaks-look-like",
+    "href": "report/data.html#what-do-the-peaks-look-like",
+    "title": "The data",
+    "section": "What do the peaks look like?",
+    "text": "What do the peaks look like?\n\n\n\nFigure 4. Peaks are short and most sit just above ENCODE’s significance thresholds. Distributions of peak width, enrichment and significance over all peaks, by cell line.\n\n\n\n\nExtended legend\n\n\nData: all 935,151 peaks from 250 experiments. Curves are density-scaled frequency polygons (60 bins) for each cell line.\nLeft: peak width in nucleotides (log scale).\nMiddle: log2 enrichment of the immunoprecipitation over size-matched input; the dashed line is ENCODE’s cut-off of 3.\nRight: −log10 p (log scale); the dashed line is the cut-off of 3. ENCODE caps −log10 p at 400, which produces the spike at the right.\nSummits: the peak files have no summit positions, so analyses place each peak at its midpoint.\n\nScript: analysis/R/05_dataset_overview_figures.R.\n\n\n\n\nFigure 5. Most RBPs bind hundreds to thousands of genes, almost all of them expressed. Left: bound genes against peaks per experiment. Right: share of each experiment’s peaks on expressed genes and outside annotated genes.\n\n\n\n\nExtended legend\n\n\nPoints: each point is one experiment (n = 250).\nBound gene: a gene with at least one peak. Each peak is assigned to one gene and region by its midpoint, using the region priority CDS &gt; 3′UTR &gt; 5′UTR &gt; small ncRNA &gt; noncoding exon &gt; proximal intron &gt; distal intron; ties between genes go to the more highly expressed gene.\nLeft: the dashed line marks one peak per gene. Median 684 bound genes and 2.5 peaks per bound gene. Both axes are log-scaled.\nRight: share of each experiment’s peaks on expressed genes (median 95%) and in intergenic sequence (median 3.5%). Bars mark medians.\n\nExpressed = median TPM ≥ 1 across that cell line’s control RNA-seq samples. Small ncRNAs, which standard RNA-seq can’t measure, always count as expressed.\n\n\nScript: analysis/R/05_dataset_overview_figures.R; data: analysis/results/tables/dataset_overview.tsv."
+  },
+  {
+    "objectID": "report/data.html#do-many-rbps-bind-the-same-genes",
+    "href": "report/data.html#do-many-rbps-bind-the-same-genes",
+    "title": "The data",
+    "section": "Do many RBPs bind the same genes?",
+    "text": "Do many RBPs bind the same genes?\n\n\n\nFigure 6. Highly expressed genes are bound by many RBPs. Top left: share of RBPs binding each expressed gene. Top right: the most widely bound (“hub”) genes. Bottom: RBPs per gene against expression and gene length.\n\n\n\n\nExtended legend\n\n\nGenes: annotated, expressed genes (median control TPM ≥ 1; small ncRNAs excluded): K562 n = 11,815, HepG2 n = 12,517.\nBound: a gene counts as bound by an RBP if any of that RBP’s experiments in the cell line has a peak in it. All 250 experiments are used; K562 has 139 RBPs and HepG2 105.\nTop left: distribution of the share of RBPs binding each gene (density, bins of 2.5%). 16% of genes are bound by none.\nTop right: the 15 genes with the highest mean share across the two lines, among genes expressed in both.\nBottom: 2-D histograms of RBPs per gene against control expression (TPM) and gene length (first to last annotated base). Colour = number of genes (log scale).\nStatistics: Spearman ρ with expression ≈ 0.70 (mean of the two lines). In a joint linear model of standardised RBP count on log TPM and log length, expression has about twice the weight of length.\n\nScript: analysis/R/05_dataset_overview_figures.R; data: analysis/results/tables/gene_rbp_counts.tsv."
+  },
+  {
+    "objectID": "report/data.html#key-takeaways",
+    "href": "report/data.html#key-takeaways",
+    "title": "The data",
+    "section": "Key takeaways",
+    "text": "Key takeaways\n\nA matched, multi-assay dataset. 168 RBPs were profiled by eCLIP in two cell lines. 128 also have a knockdown in the same cell line and 34 have cell-free binding data, so binding can be linked to function and to intrinsic sequence preference.\nDepth is the main technical variable. Experiments range from 9 to 32,718 peaks. Later (ENCODE4) K562 experiments are shallower (median 755 vs 2,132 peaks, p = 0.012), while peak strength does not differ by phase. Minimum-depth filters remove 19 experiments from binding profiles and 94 from sequence models.\nPeaks are short and modestly enriched. Most peaks are tens of nucleotides wide and sit just above ENCODE’s cut-offs, so binding is called at moderate enrichment.\neCLIP detection follows expression. Almost all peaks fall on expressed genes, and the number of RBPs binding a gene tracks its expression (ρ ≈ 0.70) much more than its length. “Hub” genes are mainly abundant transcripts, so comparisons between bound and unbound genes need expression matching."
+  },
+  {
+    "objectID": "report/cross-cell.html",
+    "href": "report/cross-cell.html",
+    "title": "Cell line comparisons",
+    "section": "",
+    "text": "Region profiles are coarse, so the K562-vs-HepG2 comparison was repeated at the level of individual binding sites, target genes and binding position around splice sites and codons. Every comparison was restricted to genes expressed in both cell lines and set against two baselines:"
+  },
+  {
+    "objectID": "report/cross-cell.html#why-are-some-peaks-found-in-only-one-cell-line",
+    "href": "report/cross-cell.html#why-are-some-peaks-found-in-only-one-cell-line",
+    "title": "Cell line comparisons",
+    "section": "Why are some peaks found in only one cell line?",
+    "text": "Why are some peaks found in only one cell line?\n\n\n\nFigure 2. Most cell-line differences are explained by expression or fall within experimental noise. Fate of each peak in the other experiment, pooled over all RBPs (top) and per RBP (bottom).\n\n\n\n\nExtended legend\n\n\nPeaks: every peak on an annotated gene, classified by what happens to it in the other experiment. Rules are applied in this order:\n\nfound in both: a peak within 50 nt in the other experiment;\ngene not expressed in the other line: median TPM &lt; 1 there;\ngene ≥ 2× lower in the other line;\nweak peak: in the bottom third of the experiment’s peaks by enrichment;\nunexplained: none of the above.\n\nSmall ncRNAs are exempt from the expression rules.\nTop: pooled over both directions.\n\nK562 vs HepG2: 611,532 peaks from 70 RBPs.\nTwo K562 experiments (ceiling): 44,896 peaks from 6 RBPs.\n\nBottom: the same breakdown per RBP for K562 vs HepG2, ordered by unexplained share.\nResult: across cell lines, 13% of peaks sit on genes not expressed in the other line and 21% on genes ≥ 2× lower there. 28% are unexplained, against 39% between two K562 experiments.\n\nScript: analysis/R/05b_cross_cell_binding.R, analysis/R/05c_cross_cell_figures.R; data: analysis/results/tables/cross_cell_decomposition.tsv."
+  },
+  {
+    "objectID": "report/cross-cell.html#binding-position",
+    "href": "report/cross-cell.html#binding-position",
+    "title": "Cell line comparisons",
+    "section": "Binding position",
+    "text": "Binding position\n\n\n\nFigure 3. Binding maps around transcript landmarks are reproduced across cell lines. Distribution of peaks around splice sites and start and stop codons for three example RBPs in K562 and HepG2.\n\n\n\n\nExtended legend\n\n\nExamples: RBFOX2 (splicing regulator), U2AF2 (3′ splice-site factor) and UPF1 (3′UTR / decay factor), one row each.\nColumns: the four landmarks.\n\n5′ and 3′ splice sites: the first and last base of each intron;\nstart and stop codons: the first and last CDS base.\n\nx-axis: position relative to the landmark (nt; positive = downstream on the transcript).\ny-axis: percentage of the RBP’s peak midpoints in each 10-nt bin.\nr: Pearson correlation of the full map (all four landmarks) between cell lines: RBFOX2 0.91, U2AF2 0.95, UPF1 0.90.\nLandmarks: taken from GENCODE V19 basic transcripts.\n\nScript: analysis/R/05b_cross_cell_binding.R, analysis/R/05c_cross_cell_figures.R."
+  },
+  {
+    "objectID": "report/cross-cell.html#key-takeaways",
+    "href": "report/cross-cell.html#key-takeaways",
+    "title": "Cell line comparisons",
+    "section": "Key takeaways",
+    "text": "Key takeaways\n\nThe same RBP binds the same places in both cell lines. Across 70 RBPs, K562 and HepG2 experiments share binding sites (median 0.22), target genes (0.58) and positional maps (r = 0.79) far more than different RBPs do (sites 0.001), and approach the agreement between two experiments in the same cell line.\nCell-line differences are no larger than experimental noise. Most peaks found in only one line sit on genes absent or much lower in the other. Only 28% are unexplained, fewer than between two K562 experiments (39%).\nApparent cell-specificity is mostly low statistical power. 50 RBPs are conserved, 18 intermediate and only 2 cell-specific. The only feature linked to conservation is experiment depth (Spearman ρ = 0.41).\nBinding is largely intrinsic to the protein. Sites, targets and binding positions relative to splice sites and codons are reproduced in a different cell type; what changes is mainly which genes are expressed."
+  }
+]
