@@ -1,0 +1,121 @@
+---
+title: "The data"
+subtitle: "What was profiled, how deep the experiments are, and what the peaks look like"
+---
+
+```{r setup}
+source("_common.R")
+a1 <- aim1_numbers()
+```
+
+**eCLIP** (enhanced crosslinking and immunoprecipitation) involves first linking proteins to the RNA they interact with inside living cells, then purifying an RBP along with the bound RNA. Sequencing the RNA allows researchers to identify where the binding sites of the RBP were in the cell.\
+\
+Each experiment yields a set of reproducible binding sites ("peaks") for one RBP. All data come from one lab (Yeo lab at UCSD) and was downloaded from the ENCODE Project repository. 
+
+## What was profiled?
+
+![**Figure 1. Most profiled RBPs also have a knockdown experiment.** Datasets available for each of the `r a1$n_rbp` RBPs. `r a1$n_kd_match` RBPs have eCLIP and a knockdown in the same cell line, which the regulation analysis (in progress) needs; `r a1$n_rbns` have cell-free binding data, used in the sequence analysis (in progress).](`r fig("aim1_overview_a_profiled")`){width=100%}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+UpSet plot of data availability per RBP.
+
+- **Rows:** five datasets.
+  - eCLIP in K562 (`r a1$set_n[["eCLIP_K562"]]` RBPs) and in HepG2 (`r a1$set_n[["eCLIP_HepG2"]]`);
+  - shRNA knockdown RNA-seq in K562 (`r a1$set_n[["knockdown_K562"]]`) and in HepG2 (`r a1$set_n[["knockdown_HepG2"]]`);
+  - RNA Bind-n-Seq, a cell-free binding assay (`r a1$set_n[["RBNS"]]`).
+- **Bars:** the number of RBPs with exactly the combination of datasets marked by the connected dots below. Combinations held by a single RBP are not shown. Right-hand bars give each dataset's total.
+- **Knockdowns:** only shRNA knockdowns with hg19 / GENCODE V19 gene quantifications and exactly one matched control are counted. CRISPRi knockdowns are excluded.
+- **eCLIP data:** `r n0(a1$n_exp)` replicate-merged IDR peak files.
+  - `r a1$n_lift` experiments were available only on GRCh38 and were lifted over to hg19.
+  - `r a1$n_dup` RBP × cell line pairs have two independent experiments.
+
+Script: `analysis/R/05_dataset_overview_figures.R`; data: `analysis/results/tables/rbp_availability.tsv`.
+
+</details>
+
+## How deep is each experiment?
+
+![**Figure 2. Experiment depth varies over three orders of magnitude.** Number of peaks per eCLIP experiment, ranked. Dashed lines mark the minimum depth used for binding profiles (100 peaks) and for sequence models (1,000 peaks).](`r fig("aim1_overview_b_peaks_per_experiment")`){width=100%}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Points:** each point is one eCLIP experiment (n = `r a1$n_exp`), coloured by cell line. Open circles are experiments lifted over from GRCh38.
+- **Peaks:** reproducible (IDR) peaks as released by ENCODE. ENCODE's thresholds are log2 enrichment over size-matched input ≥ 3 and −log10 p ≥ 3; only canonical chromosomes are kept.
+- **Range:** `r n0(a1$peaks_min)` to `r n0(a1$peaks_max)` peaks per experiment (median `r n0(a1$peaks_med)`). The y-axis is log-scaled.
+- **Exclusions:** `r a1$n_lt100` experiments fall below 100 peaks and are excluded from binding profiles; `r a1$n_lt1k` fall below 1,000 and are excluded from sequence models.
+
+Script: `analysis/R/05_dataset_overview_figures.R`; data: `analysis/results/tables/dataset_overview.tsv`.
+
+</details>
+
+![**Figure 3. Later K562 experiments are shallower, but peak strength is stable.** Peaks per experiment (left) and median peak enrichment (right) by release year and cell line. Bars mark medians.](`r fig("aim1_overview_d_batch")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Points:** each point is one experiment, placed by its ENCODE release year. ENCODE3 experiments were released 2015–2018 (K562 n = `r a1$n_k3`, HepG2 n = `r a1$n_h3`); ENCODE4 experiments 2018–2023 (K562 n = `r a1$n_k4`, HepG2 n = `r a1$n_h4`).
+- **Left:** peaks per experiment (log scale).
+- **Right:** median log2 enrichment of each experiment's peaks.
+- **Bars:** medians per year and cell line.
+- **Tests:** ENCODE3 vs ENCODE4, two-sided Wilcoxon rank-sum test within each cell line.
+  - Depth: K562 p = `r sprintf("%.3f", a1$k562_p)` (median `r n0(a1$k562_enc3)` vs `r n0(a1$k562_enc4)` peaks); HepG2 p = `r sprintf("%.3f", a1$hepg2_p)`.
+  - Peak strength: K562 p = `r sprintf("%.3f", a1$str_p_k)`; HepG2 p = `r sprintf("%.3f", a1$str_p_h)`.
+- **Batch:** all experiments come from the same lab, so release phase is the main batch variable.
+
+Script: `analysis/R/05_dataset_overview_figures.R`; data: `analysis/results/tables/batch_tests.tsv`.
+
+</details>
+
+## What do the peaks look like?
+
+![**Figure 4. Peaks are short and most sit just above ENCODE's significance thresholds.** Distributions of peak width, enrichment and significance over all peaks, by cell line.](`r fig("aim1_overview_c_peak_properties")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Data:** all `r n0(a1$n_peaks)` peaks from `r a1$n_exp` experiments. Curves are density-scaled frequency polygons (60 bins) for each cell line.
+- **Left:** peak width in nucleotides (log scale).
+- **Middle:** log2 enrichment of the immunoprecipitation over size-matched input; the dashed line is ENCODE's cut-off of 3.
+- **Right:** −log10 p (log scale); the dashed line is the cut-off of 3. ENCODE caps −log10 p at 400, which produces the spike at the right.
+- **Summits:** the peak files have no summit positions, so analyses place each peak at its midpoint.
+
+Script: `analysis/R/05_dataset_overview_figures.R`.
+
+</details>
+
+![**Figure 5. Most RBPs bind hundreds to thousands of genes, almost all of them expressed.** Left: bound genes against peaks per experiment. Right: share of each experiment's peaks on expressed genes and outside annotated genes.](`r fig("aim1_overview_e_genes_per_experiment")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Points:** each point is one experiment (n = `r a1$n_exp`).
+- **Bound gene:** a gene with at least one peak. Each peak is assigned to one gene and region by its midpoint, using the region priority CDS > 3′UTR > 5′UTR > small ncRNA > noncoding exon > proximal intron > distal intron; ties between genes go to the more highly expressed gene.
+- **Left:** the dashed line marks one peak per gene. Median `r n0(a1$med_genes)` bound genes and `r sprintf("%.1f", a1$med_ppg)` peaks per bound gene. Both axes are log-scaled.
+- **Right:** share of each experiment's peaks on expressed genes (median `r sprintf("%.0f", a1$med_expr)`%) and in intergenic sequence (median `r sprintf("%.1f", a1$med_inter)`%). Bars mark medians.
+  - Expressed = median TPM ≥ 1 across that cell line's control RNA-seq samples. Small ncRNAs, which standard RNA-seq can't measure, always count as expressed.
+
+Script: `analysis/R/05_dataset_overview_figures.R`; data: `analysis/results/tables/dataset_overview.tsv`.
+
+</details>
+
+## Do many RBPs bind the same genes?
+
+![**Figure 6. Highly expressed genes are bound by many RBPs.** Top left: share of RBPs binding each expressed gene. Top right: the most widely bound ("hub") genes. Bottom: RBPs per gene against expression and gene length.](`r fig("aim1_overview_f_shared_genes")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Genes:** annotated, expressed genes (median control TPM ≥ 1; small ncRNAs excluded): K562 n = `r n0(a1$n_genes_k)`, HepG2 n = `r n0(a1$n_genes_h)`.
+- **Bound:** a gene counts as bound by an RBP if any of that RBP's experiments in the cell line has a peak in it. All `r a1$n_exp` experiments are used; K562 has `r a1$n_prof_k` RBPs and HepG2 `r a1$n_prof_h`.
+- **Top left:** distribution of the share of RBPs binding each gene (density, bins of 2.5%). `r sprintf("%.0f", a1$pct_unbound)`% of genes are bound by none.
+- **Top right:** the 15 genes with the highest mean share across the two lines, among genes expressed in both.
+- **Bottom:** 2-D histograms of RBPs per gene against control expression (TPM) and gene length (first to last annotated base). Colour = number of genes (log scale).
+- **Statistics:** Spearman ρ with expression ≈ `r r2(a1$rho_tpm)` (mean of the two lines). In a joint linear model of standardised RBP count on log TPM and log length, expression has about twice the weight of length.
+
+Script: `analysis/R/05_dataset_overview_figures.R`; data: `analysis/results/tables/gene_rbp_counts.tsv`.
+
+</details>
+
+## Key takeaways
+
+1. **A matched, multi-assay dataset.** `r a1$n_rbp` RBPs were profiled by eCLIP in two cell lines. `r a1$n_kd_match` also have a knockdown in the same cell line and `r a1$n_rbns` have cell-free binding data, so binding can be linked to function and to intrinsic sequence preference.
+2. **Depth is the main technical variable.** Experiments range from `r n0(a1$peaks_min)` to `r n0(a1$peaks_max)` peaks. Later (ENCODE4) K562 experiments are shallower (median `r n0(a1$k562_enc4)` vs `r n0(a1$k562_enc3)` peaks, p = `r sprintf("%.3f", a1$k562_p)`), while peak strength does not differ by phase. Minimum-depth filters remove `r a1$n_lt100` experiments from binding profiles and `r a1$n_lt1k` from sequence models.
+3. **Peaks are short and modestly enriched.** Most peaks are tens of nucleotides wide and sit just above ENCODE's cut-offs, so binding is called at moderate enrichment.
+4. **eCLIP detection follows expression.** Almost all peaks fall on expressed genes, and the number of RBPs binding a gene tracks its expression (ρ ≈ `r r2(a1$rho_tpm)`) much more than its length. "Hub" genes are mainly abundant transcripts, so comparisons between bound and unbound genes need expression matching.

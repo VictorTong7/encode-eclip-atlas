@@ -1,0 +1,120 @@
+---
+title: "Where RBPs bind"
+subtitle: "Which transcript regions each RBP binds, and how similar different RBPs are"
+---
+
+```{r setup}
+source("_common.R")
+a1 <- aim1_numbers()
+cn <- a1$cat_n
+```
+
+Each peak was assigned to one transcript region by its midpoint: coding sequence (CDS), 3′UTR, 5′UTR, small ncRNA, noncoding exon, proximal intron (≤ 500 nt from a splice site) or distal intron. An experiment's **main binding category** is the region where its share of peaks is highest *relative to the average RBP*. Raw shares would mostly reflect region length.
+
+<details class="legend-more"><summary>Why categories rather than clusters?</summary>
+
+The original plan clustered RBPs by their region profiles. The clusters were weak: mean silhouette `r r2(a1$min_sil)`–`r r2(a1$best_sil)` for 4–12 clusters, with no natural number of groups, and membership was unstable under resampling. The profiles form a continuum, so a transparent rule (main region, or "no clear preference" if the lead is under 0.25 log2) describes them more honestly.
+
+</details>
+
+## Each RBP has a main binding region
+
+![**Figure 1. Each main binding category is dominated by its own region.** Mean share of peaks per transcript region for the experiments in each category. `r a1$n_mixed` of `r a1$n_prof` experiments have no clear preference.](`r fig("aim1_landscape_a_region_composition")`){width=100%}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Experiments:** `r a1$n_prof` eCLIP experiments with ≥ 100 peaks; peaks on expressed genes only.
+- **Category rule:** for each region, the experiment's peak share is compared with the mean share across all experiments in the same cell line (log2 ratio). The category is the group of the highest-scoring region.
+  - Groups: CDS; 3′UTR; 5′UTR; ncRNA (small ncRNA + noncoding exon); splice-site intron (proximal intron); deep intron (distal intron).
+  - An experiment whose best group leads the next by < 0.25 log2 (< 1.19×) is labelled "no clear preference".
+- **Category sizes:** CDS `r cn[["CDS"]]`, 3′UTR `r cn[["3UTR"]]`, 5′UTR `r cn[["5UTR"]]`, ncRNA `r cn[["ncRNA"]]`, splice-site intron `r cn[["splice_site"]]`, deep intron `r cn[["deep_intron"]]`, no clear preference `r cn[["mixed"]]`.
+- **Bars:** each bar shows the mean share of peaks in each of the 7 regions, averaged over the category's experiments and normalised to 100%. Labels are shown for segments ≥ 8%.
+
+Script: `analysis/R/05_binding_landscape_figures.R`; data: `analysis/results/tables/rbp_categories.tsv`.
+
+</details>
+
+![**Figure 2. Region enrichment of every experiment.** Rows are experiments grouped by main category; columns are transcript regions. Red = more enriched than the average experiment, blue = less.](`r fig("aim1_landscape_b_enrichment_heatmap")`){width=100%}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Enrichment:** for each experiment and region, log2 of the region's share of peaks (on expressed genes) divided by the region's share of the expressed transcriptome's length in that cell line.
+- **Scaling:** values are z-scored per region across the `r a1$n_prof` experiments and capped at ±3. Z-scoring removes the region-wide length effect, under which introns look depleted for every RBP.
+- **Row order:** grouped by main category, strongest preference (largest lead) first.
+- **Right-hand annotations:** cell line, peak count (log scale) and selected well-studied RBPs.
+
+Script: `analysis/R/05_binding_landscape_figures.R`; data: `analysis/results/tables/rbp_clusters.tsv` (z-scores).
+
+</details>
+
+## Two axes describe most of the variation
+
+A principal component analysis (PCA) of the seven region scores combines them into a few independent axes. Each axis is ranked by how much of the difference between experiments it captures. The first two capture `r sprintf("%.0f", a1$pc12)`%:
+
+- **PC1 (`r sprintf("%.0f", a1$pc1)`%) separates intron binders from coding-sequence binders.** RBPs that bind near splice sites or deep in introns sit on the right; RBPs that bind within the coding sequence sit on the left.
+- **PC2 (`r sprintf("%.0f", a1$pc2)`%) separates the 5′ end and small RNAs from the 3′ end.** RBPs that favour 5′UTRs and small non-coding RNAs (snoRNAs, snRNAs) sit at the top; RBPs that favour 3′UTRs and deep introns sit at the bottom.
+
+![**Figure 3. Each binding category occupies its own part of the map.** All experiments on the first two principal components; each panel highlights one main binding category in colour (grey = all others).](`r fig("aim1_landscape_c_pca")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **PCA:** run on the `r a1$n_prof` × 7 matrix of z-scored region enrichments (Figure 2), centred, without further scaling (`prcomp` in R).
+- **Variance explained:** PC1 `r sprintf("%.0f", a1$pc1)`%, PC2 `r sprintf("%.0f", a1$pc2)`%, PC3 `r sprintf("%.0f", a1$pc3)`%. PC3 is not shown; it mainly separates 3′UTR and noncoding-exon binding.
+- **Axis meaning:** the arrow labels come from the region loadings (`analysis/results/tables/pca_loadings.tsv`).
+  - PC1: positive for proximal and distal intron, negative for CDS.
+  - PC2: positive for 5′UTR and small ncRNA, negative for 3′UTR and distal intron.
+- **Points:** each point is one experiment, in the same position in every panel.
+- **Caveat:** the categories were assigned from the same region profiles, so some separation is expected by construction. The figure shows where the categories sit within the continuous variation.
+
+Script: `analysis/R/05_binding_landscape_figures.R`; data: `analysis/results/tables/pca_variance.tsv`, `pca_loadings.tsv`.
+
+</details>
+
+## How similar are the experiments?
+
+![**Figure 4. The same RBP has very similar binding profiles in both cell lines.** Left: correlation between the binding profiles of all experiments, grouped by main category. Right: the RBPs profiled in both cell lines (K562 rows, HepG2 columns, same order); the outlined diagonal pairs each RBP with itself.](`r fig("aim1_landscape_d_similarity")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Similarity:** Pearson correlation between two experiments' 7-value z-scored region profiles (Figure 2). Red = similar, blue = opposite profiles.
+- **Left (`r a1$n_prof` × `r a1$n_prof` experiments):** rows and columns are grouped by main category. Within each category they are ordered by average-linkage hierarchical clustering on 1 − r. Side bars show category and cell line.
+- **Right (`r a1$n_both` RBPs with ≥ 100 peaks in both lines):** rows are K562 experiments, columns the HepG2 experiment of the same RBP, in the same order, so the diagonal (outlined) compares each RBP with itself. Where an RBP has two K562 experiments, the first listed is used. About ten well-studied RBPs are labelled.
+- **Result:** same-RBP median r = `r r2(a1$corr_same)`; different RBPs median r = `r r2(a1$corr_diff)`.
+
+Script: `analysis/R/05_binding_landscape_figures.R`.
+
+</details>
+
+![**Figure 5. Binding profiles are reproducible across cell lines.** Left: profile distance between an RBP's K562 and HepG2 experiments (blue) compared with all pairs of different RBPs (grey). Right: how often the main category agrees between the two lines.](`r fig("aim1_landscape_e_concordance")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Distance:** Euclidean distance between two experiments' z-scored region profiles.
+- **Left:**
+  - grey histogram: all `r n0(a1$n_diff_pairs)` K562–HepG2 pairs of *different* RBPs (mean `r r2(a1$dist_diff)`);
+  - blue ticks: the `r a1$n_both` same-RBP pairs (mean `r r2(a1$dist_same)`);
+  - vertical lines: the two means.
+- **Test:** permutation test (10,000 random re-pairings of K562 and HepG2 experiments, one-sided), p < 0.001.
+- **Right:** cross-tabulation of main category in K562 (rows) and HepG2 (columns) for the `r a1$n_both` RBPs; the diagonal (outlined) means agreement.
+  - The category agrees in `r a1$same_cat` of `r a1$n_both`.
+  - Most disagreements involve "no clear preference": an experiment near the 0.25 log2 cut-off can fall on either side in the two lines even when the profiles are similar.
+
+Script: `analysis/R/05_binding_landscape_figures.R`; data: `analysis/results/tables/concordance.tsv`, `category_concordance.tsv`.
+
+</details>
+
+## Key takeaways
+
+1. **Most RBPs have a clear main binding region.** `r a1$n_prof - a1$n_mixed` of `r a1$n_prof` experiments favour one region group:
+   - CDS `r cn[["CDS"]]`, 3′UTR `r cn[["3UTR"]]`, 5′UTR `r cn[["5UTR"]]`;
+   - ncRNA `r cn[["ncRNA"]]`;
+   - splice-site intron `r cn[["splice_site"]]`, deep intron `r cn[["deep_intron"]]`.
+
+   Proteins with known roles land where expected (e.g. RBFOX2 and U2AF2 near splice sites, PUM2 and UPF1 in 3′UTRs).
+2. **Binding location points to function:**
+   - splice-site and deep-intron binders: pre-mRNA processing;
+   - 3′UTR binders: mRNA stability;
+   - 5′UTR binders: translation;
+   - ncRNA binders: small-RNA processing.
+3. **Binding profiles form a continuum, not discrete classes.** Two axes, introns vs coding sequence and 5′UTR/small RNA vs 3′UTR, explain `r sprintf("%.0f", a1$pc12)`% of the variation; clustering found no natural groups.
+4. **A binding profile is a property of the protein.** The same RBP's K562 and HepG2 profiles correlate with median r = `r r2(a1$corr_same)` (different RBPs: `r r2(a1$corr_diff)`), and their distance is less than half that between different RBPs (`r r2(a1$dist_same)` vs `r r2(a1$dist_diff)`, p < 0.001).

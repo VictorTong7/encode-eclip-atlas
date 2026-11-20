@@ -1,0 +1,17 @@
+feature	effect	estimate	ci_low	ci_high	p	conserved_n	not_conserved_n	spearman_with_site_sharing	spearman_p	p_bh	spearman_p_bh
+log10_min_peaks	Cliff's delta	0.357	0.038	0.632	0.0207	50	20	0.411	0.000412	0.331	0.00659
+lifted_2022_batch	difference in proportion	-0.16	-0.35	0.01	0.0515	50	20	-0.168	0.165	0.412	0.527
+abs_log2_peak_ratio	Cliff's delta	-0.256	-0.53	0.04	0.0974	50	20	-0.203	0.0913	0.433	0.527
+intronic_binder	difference in proportion	0.23	0	0.46	0.108	50	20	0.149	0.22	0.433	0.549
+target_expr_divergence	Cliff's delta	0.176	-0.166	0.498	0.255	50	20	0.0923	0.447	0.817	0.634
+cytoplasm	difference in proportion	0.103	-0.158	0.355	0.429	49	20	0.0435	0.722	1	0.788
+same_release_year	difference in proportion	0.07	-0.19	0.33	0.601	50	20	0.137	0.258	1	0.549
+rbp_abs_log2_ratio	Cliff's delta	-0.064	-0.334	0.236	0.682	50	20	-0.132	0.275	1	0.549
+ribosome_biogenesis	difference in proportion	-0.0571	-0.268	0.134	0.718	49	20	-0.0895	0.465	1	0.634
+frac_peaks_shared_expressed	Cliff's delta	0.044	-0.298	0.38	0.78	50	20	0.0792	0.515	1	0.634
+rna_splicing	difference in proportion	0.049	-0.203	0.29	0.793	49	20	0.033	0.788	1	0.788
+rbp_log2_tpm	Cliff's delta	0.022	-0.26	0.306	0.891	50	20	-0.0366	0.764	1	0.788
+utr3_or_cds_binder	difference in proportion	0.03	-0.2	0.28	1	50	20	-0.0841	0.489	1	0.634
+nucleus	difference in proportion	-0.0316	-0.143	0.109	1	49	20	-0.171	0.16	1	0.527
+translation	difference in proportion	0.0245	-0.187	0.227	1	49	20	-0.111	0.363	1	0.634
+mrna_stability	difference in proportion	-0.0255	-0.257	0.186	1	49	20	-0.197	0.105	1	0.527

@@ -1,0 +1,3 @@
+model	pseudo_r2	auc
+expression + strength + region	0.1106	0.72
+strength + region (no expression)	0.0196	0.5969

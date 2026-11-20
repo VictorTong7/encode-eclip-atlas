@@ -1,0 +1,70 @@
+---
+title: "Methods"
+subtitle: "Data, pipeline, the checks that changed conclusions, limitations and how to reproduce"
+---
+
+```{r setup}
+source("_common.R")
+a1 <- aim1_numbers()
+```
+
+## Data and approach
+
+All data are public [ENCODE](https://www.encodeproject.org) files:
+
+- eCLIP IDR peaks (`r n0(a1$n_exp)` experiments, `r a1$n_rbp` RBPs, K562 and HepG2);
+- control RNA-seq gene quantifications, used to define expressed genes;
+- knockdown RNA-seq and RNA Bind-n-Seq metadata, used to describe what was profiled;
+- hg19 genome and GENCODE V19 annotation.
+
+`r a1$n_lift` newer experiments exist only on GRCh38 and were lifted over to hg19. A download manifest records every file's accession and MD5 checksum.
+
+```{mermaid}
+flowchart LR
+  A[ENCODE API<br/>manifest + download<br/>MD5-checked] --> B[Liftover and<br/>region annotation<br/>GENCODE V19]
+  B --> C[Automated<br/>consistency checks]
+  B --> D[The data]
+  B --> E[Where RBPs bind]
+  E --> F[Same binding in<br/>both cell lines?]
+```
+
+**Tools:**
+
+- **R and Bioconductor:** GenomicRanges, GenomicFeatures, rtracklayer, ComplexHeatmap, ggplot2, patchwork;
+- **Python:** pandas, requests and pyfaidx for the download pipeline and checks;
+- **Quarto** for this site.
+
+Every number on these pages is computed from saved result tables when the site is built, and each figure caption names the script that made the figure.
+
+## Decisions and checks
+
+| Problem found | What I did | Effect on conclusions |
+|---|---|---|
+| Analyses needed compatibility with earlier hg19 work, but `r a1$n_lift` newer experiments exist only on GRCh38 | Used native hg19 files and lifted the others over, keeping only one-to-one, same-strand mappings (median 0.6% of peaks lost) | Kept all `r a1$n_rbp` RBPs |
+| Length-normalised enrichment ranked RBFOX2's top region as 5′UTR | Recognised that intronic RNA is short-lived; compared each RBP against all others | Top regions now match known biology |
+| Clustering RBPs by binding profile gave weak, unstable clusters | Grouped RBPs by main binding region instead, with a "no clear preference" group | Groups are transparent and interpretable |
+| Site-sharing metric was inflated by unequal peak counts | Replaced it with a depth-matched metric | Removed a spurious "peak-count imbalance" association |
+| eCLIP detects binding mostly on abundant transcripts | Restricted cross-cell comparisons to genes expressed in both lines and explained one-line-only peaks by expression | Separated real cell-type differences from expression differences |
+| ENCODE temporarily blocked downloads part-way through | Rate-limited, resumable, MD5-checked downloader that stops on repeated refusals | All files verified |
+| Silent errors in a multi-step pipeline are easy to miss | Automated pre-processing checks: file checksums, peak counts and thresholds, annotation consistency and known biology (e.g. RBFOX2 binds near splice sites) | Pre-processing re-verified after every change |
+
+## Limitations
+
+- **Two cell lines, one time point:** cell-type comparisons cover only K562 and HepG2.
+- **Sensitivity:** eCLIP sensitivity scales with expression, so weak sites on rare transcripts are missed.
+- **Peak calls:** ENCODE's IDR peaks are used as given. About 16% overlap or abut another peak of the same experiment, and peaks are placed by their midpoint, so peaks straddling exon–intron boundaries can be assigned to either side.
+- **Region categories:** an experiment's main region is a coarse label on a continuous profile; experiments near the cut-off can change category between cell lines.
+
+## Reproducibility
+
+| Step | Scripts | Runtime |
+|---|---|---|
+| Download (ENCODE API) and liftover | `preprocess/python/01–02`, `preprocess/R/02b` | ~15 min |
+| Region annotation and peak assignment | `preprocess/R/03–04`, `preprocess/python/05a` | ~3 min |
+| Consistency checks | `preprocess/checks/` | ~2 min |
+| The data | `analysis/R/05_dataset_overview*.R` | <1 min |
+| Where RBPs bind | `analysis/R/05_binding_landscape*.R` | <1 min |
+| Cell lines | `analysis/R/05b–05c` | ~8 min |
+| This site | `quarto render analysis` | ~1 min |
+
+**Environment:** R 4.6 + Bioconductor 3.23 (`preprocess/R/00_install_packages.R`); Python 3 (`requirements.txt`). Raw data (5.6 GB) are not stored in the repository; the scripts download and verify them.

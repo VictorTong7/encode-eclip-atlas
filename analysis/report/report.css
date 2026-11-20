@@ -1,0 +1,35 @@
+body { color: #1f1f1d; background: #fcfcfb; }
+h1.title { font-weight: 700; }
+h2 { margin-top: 2.2rem; border-bottom: 1px solid #e1e0d9; padding-bottom: .3rem; }
+figcaption, .figure-caption { color: #52514e; font-size: .9rem; }
+table { font-size: .9rem; }
+img { max-width: 100%; height: auto; }
+/* keep the page within narrow screens: wide tables scroll inside their own box, diagrams scale */
+table { display: block; overflow-x: auto; max-width: 100%; }
+svg, .mermaid svg, pre.mermaid svg { max-width: 100% !important; height: auto; }
+main, #quarto-content { overflow-wrap: anywhere; }
+@media (max-width: 600px) { body { padding-left: 16px; padding-right: 16px; } }
+/* grid children may shrink below their content width, so one wide element cannot widen the page */
+.page-columns > *, main, #quarto-document-content { min-width: 0; }
+.quarto-figure, figure, .cell-output-display { max-width: 100%; overflow-x: auto; }
+
+/* ---- figure legends: brief visible caption + collapsible extended legend ---- */
+figcaption, .figure-caption { color: #1f1f1d; font-size: .92rem; line-height: 1.45; }
+details.legend-more { margin: -0.4rem 0 1.8rem 0; font-size: .88rem; color: #3a3936; }
+details.legend-more > summary {
+  display: inline-block; cursor: pointer; list-style: none; user-select: none;
+  padding: .2rem .7rem; border: 1px solid #c3c2b7; border-radius: 4px;
+  background: #f0efec; color: #3a3936; font-size: .82rem; font-weight: 600;
+}
+details.legend-more > summary::-webkit-details-marker { display: none; }
+details.legend-more > summary::before { content: "+ "; }
+details.legend-more[open] > summary::before { content: "− "; }
+details.legend-more > summary:hover { background: #e1e0d9; }
+details.legend-more[open] > summary { margin-bottom: .6rem; }
+details.legend-more > *:not(summary) { margin-left: .2rem; }
+details.legend-more ul { padding-left: 1.2rem; margin-bottom: .4rem; }
+
+/* ---- key takeaways: always the last section, plain text but clearly set apart ---- */
+#key-takeaways, #whats-next { margin-top: 3rem; }
+#key-takeaways h2, #whats-next h2 { border-bottom: 2px solid #0b0b0b; }
+#key-takeaways ol > li, #whats-next ol > li { margin-bottom: .6rem; }

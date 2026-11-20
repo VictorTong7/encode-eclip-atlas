@@ -1,0 +1,4 @@
+setting	agreement	conserved	intermediate	cell_specific
+maxgap 25 nt, TPM >= 1	0.971428571428571	51	16	3
+maxgap 100 nt, TPM >= 1	0.971428571428571	52	16	2
+maxgap 50 nt, TPM >= 5	0.957142857142857	52	15	3

@@ -1,0 +1,7 @@
+cell_line	metric	n_ENCODE3	n_ENCODE4	median_ENCODE3	median_ENCODE4	wilcoxon_p
+all	n_peaks	168	82	2289	914	0.007184
+all	median_log2fc	168	82	3.968	3.856	0.1783
+K562	n_peaks	90	55	2132	755	0.01159
+K562	median_log2fc	90	55	3.961	3.857	0.2497
+HepG2	n_peaks	78	27	2478	2116	0.5307
+HepG2	median_log2fc	78	27	4	3.838	0.3575

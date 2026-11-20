@@ -1,0 +1,6 @@
+term	odds_ratio	ci_low	ci_high	p
+(Intercept)	0.0729	0.000401	13.3	0.324
+log10_min_peaks	3.72	1.22	11.4	0.0208
+intronic_binderTRUE	1.91	0.547	6.65	0.311
+target_expr_divergence	1.32	0.0177	98.5	0.899
+nucleusTRUE	0.339	0.029	3.96	0.388

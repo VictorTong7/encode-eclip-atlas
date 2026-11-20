@@ -1,0 +1,99 @@
+---
+title: "Cell line comparisons"
+subtitle: "Does an RBP bind the same sites, genes and positions in two different cell types?"
+---
+
+```{r setup}
+source("_common.R")
+b <- aim1b_numbers()
+np <- b$n_pairs
+```
+
+Region profiles are coarse, so the K562-vs-HepG2 comparison was repeated at the level of individual **binding sites**, **target genes** and **binding position** around splice sites and codons. Every comparison was restricted to genes expressed in both cell lines and set against two baselines:
+
+- **a ceiling:** two independent experiments in the *same* cell line;
+- **a null:** different RBPs from the same binding-profile cluster.
+
+| Median agreement | Sites (depth-matched) | Target genes | Positional maps |
+|---|---|---|---|
+| Same RBP, two K562 experiments (ceiling) | `r r2(b$m("ceiling","site"))` | `r r2(b$m("ceiling","gene"))` | `r r2(b$m("ceiling","map"))` |
+| **Same RBP, K562 vs HepG2** | **`r r2(b$m("test","site"))`** | **`r r2(b$m("test","gene"))`** | **`r r2(b$m("test","map"))`** |
+| Different RBPs, same profile cluster | `r sprintf("%.3f", b$m("null2","site"))` | `r r2(b$m("null2","gene"))` | `r r2(b$m("null2","map"))` |
+| Different RBPs | `r sprintf("%.3f", b$m("null1","site"))` | `r r2(b$m("null1","gene"))` | `r r2(b$m("null1","map"))` |
+
+![**Figure 1. The same RBP binds the same sites, genes and positions in both cell lines.** Agreement between pairs of experiments at three levels. Same-RBP pairs across cell lines (K562 vs HepG2) come close to the agreement between two experiments in the same cell line, and far exceed pairs of different RBPs.](`r fig("fig2a_sharing")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **RBPs:** the `r np[["test"]]` RBPs with ≥ 100 peaks in both K562 and HepG2. Each uses its primary experiment (most peaks) per cell line.
+- **Comparisons (rows):**
+  - same RBP, K562 vs HepG2 (n = `r np[["test"]]`);
+  - ceiling: same RBP, two independent K562 experiments (n = `r np[["ceiling"]]`);
+  - different RBPs from the same Aim 1 binding-profile cluster, labelled "same binding class" (n = `r n0(np[["null2"]])` pairs);
+  - all other pairs of different RBPs (n = `r n0(np[["null1"]])`).
+- **Display:** points and bars (medians) for the two same-RBP comparisons; boxes summarise the different-RBP pairs.
+- **Gene universe:** only peaks on genes expressed in both lines (median control TPM ≥ 1 in each; small ncRNAs always included).
+- **Sites shared (depth-matched):**
+  - Both peak sets are cut to the strongest *n* peaks, where *n* is the size of the smaller set.
+  - The value is the mean of the two directional shared fractions.
+  - Peaks within 50 nt (midpoint to midpoint) count as the same site.
+  - Depth matching removes the bias from unequal peak counts.
+- **Target genes shared:** genes bound in both, divided by the number bound in the smaller set.
+- **Positional map correlation:**
+  - A map is the share of the RBP's peak midpoints in 10-nt bins within ±300 nt of 5′ and 3′ splice sites and start and stop codons.
+  - The value is the Pearson correlation of the full concatenated map.
+  - Computed only when both experiments have ≥ 30 peaks near landmarks (`r b$n_map` of `r np[["test"]]` same-RBP pairs).
+
+Script: `analysis/R/05b_cross_cell_binding.R` (statistics), `analysis/R/05c_cross_cell_figures.R` (figure); data: `analysis/results/tables/cross_cell_pairs.tsv`, `cross_cell_null_pairs.tsv`.
+
+</details>
+
+## Why are some peaks found in only one cell line?
+
+![**Figure 2. Most cell-line differences are explained by expression or fall within experimental noise.** Fate of each peak in the other experiment, pooled over all RBPs (top) and per RBP (bottom).](`r fig("fig2b_difference_decomposition")`){width=85%}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Peaks:** every peak on an annotated gene, classified by what happens to it in the other experiment. Rules are applied in this order:
+  1. *found in both*: a peak within 50 nt in the other experiment;
+  2. *gene not expressed in the other line*: median TPM < 1 there;
+  3. *gene ≥ 2× lower in the other line*;
+  4. *weak peak*: in the bottom third of the experiment's peaks by enrichment;
+  5. *unexplained*: none of the above.
+
+  Small ncRNAs are exempt from the expression rules.
+- **Top:** pooled over both directions.
+  - K562 vs HepG2: `r n0(b$n_peaks_decomp[["test"]])` peaks from `r np[["test"]]` RBPs.
+  - Two K562 experiments (ceiling): `r n0(b$n_peaks_decomp[["ceiling"]])` peaks from `r np[["ceiling"]]` RBPs.
+- **Bottom:** the same breakdown per RBP for K562 vs HepG2, ordered by unexplained share.
+- **Result:** across cell lines, `r pct(b$frac("test", "not expressed in other line"))` of peaks sit on genes not expressed in the other line and `r pct(b$frac("test", "expressed ≥2× lower"))` on genes ≥ 2× lower there. `r pct(b$unexplained("test"))` are unexplained, against `r pct(b$unexplained("ceiling"))` between two K562 experiments.
+
+Script: `analysis/R/05b_cross_cell_binding.R`, `analysis/R/05c_cross_cell_figures.R`; data: `analysis/results/tables/cross_cell_decomposition.tsv`.
+
+</details>
+
+## Binding position
+
+![**Figure 3. Binding maps around transcript landmarks are reproduced across cell lines.** Distribution of peaks around splice sites and start and stop codons for three example RBPs in K562 and HepG2.](`r fig("fig2c_binding_maps")`){width=90%}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Examples:** RBFOX2 (splicing regulator), U2AF2 (3′ splice-site factor) and UPF1 (3′UTR / decay factor), one row each.
+- **Columns:** the four landmarks.
+  - 5′ and 3′ splice sites: the first and last base of each intron;
+  - start and stop codons: the first and last CDS base.
+- **x-axis:** position relative to the landmark (nt; positive = downstream on the transcript).
+- **y-axis:** percentage of the RBP's peak midpoints in each 10-nt bin.
+- **r:** Pearson correlation of the full map (all four landmarks) between cell lines: RBFOX2 `r r2(b$map_r_of("RBFOX2"))`, U2AF2 `r r2(b$map_r_of("U2AF2"))`, UPF1 `r r2(b$map_r_of("UPF1"))`.
+- **Landmarks:** taken from GENCODE V19 basic transcripts.
+
+Script: `analysis/R/05b_cross_cell_binding.R`, `analysis/R/05c_cross_cell_figures.R`.
+
+</details>
+
+## Key takeaways
+
+1. **The same RBP binds the same places in both cell lines.** Across `r np[["test"]]` RBPs, K562 and HepG2 experiments share binding sites (median `r r2(b$m("test","site"))`), target genes (`r r2(b$m("test","gene"))`) and positional maps (r = `r r2(b$m("test","map"))`) far more than different RBPs do (sites `r sprintf("%.3f", b$m("null1","site"))`), and approach the agreement between two experiments in the same cell line.
+2. **Cell-line differences are no larger than experimental noise.** Most peaks found in only one line sit on genes absent or much lower in the other. Only `r pct(b$unexplained("test"))` are unexplained, fewer than between two K562 experiments (`r pct(b$unexplained("ceiling"))`).
+3. **Apparent cell-specificity is mostly low statistical power.** `r b$groups[["conserved"]]` RBPs are conserved, `r b$groups[["intermediate"]]` intermediate and only `r b$groups[["cell-specific"]]` cell-specific. The only feature linked to conservation is experiment depth (Spearman ρ = `r r2(b$depth_rho)`).
+4. **Binding is largely intrinsic to the protein.** Sites, targets and binding positions relative to splice sites and codons are reproduced in a different cell type; what changes is mainly which genes are expressed.

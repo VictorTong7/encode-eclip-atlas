@@ -1,0 +1,37 @@
+---
+title: "ENCODE eCLIP Atlas"
+subtitle: "Where RNA-binding proteins bind and whether binding changes RNA levels"
+author: "Victor Tong"
+date: last-modified
+---
+
+```{r setup}
+source("report/_common.R")
+a1 <- aim1_numbers(); a1b <- aim1b_numbers()
+```
+
+RNA-binding proteins (RBPs) control many aspects of RNAs: how it's processed, where it goes, how long it lasts, how much protein it makes. 
+Thus, one important aspect of RBP biology is to identify what RNAs a RBP binds to. 
+This project analyses **`r n0(a1$n_exp)` public ENCODE eCLIP experiments**, which map the binding sites of **`r a1$n_rbp` RBPs** in two human cell lines (K562 and HepG2). 
+It then combines these results with the change in RNA level after depletion of the RBPs.\
+\
+It asks **two core questions**: where do RBPs bind on each RNA and whether binding predicts how RNA levels change when the protein is removed.
+This site presents the answer to the first question; the second is in progress.
+
+## Key findings
+
+1. **Most RBPs have a clear main binding region.** All `r n0(a1$n_peaks)` binding sites were assigned to transcript regions. `r a1$n_prof - a1$n_mixed` of `r a1$n_prof` experiments have one main region (splice-site or deep intron, coding sequence, 3′UTR, 5′UTR or ncRNA), and proteins with known roles land where expected. → [Where RBPs bind](report/binding.qmd)
+2. **Binding is mostly a property of the protein, not the cell.** The same RBP binds the same *sites* in both cell lines far more often than different RBPs do: median depth-matched site sharing `r r2(a1b$m("test","site"))`, against `r sprintf("%.3f", a1b$m("null2","site"))` for similar RBPs. Most remaining differences come from which genes each cell line expresses, or from ordinary experiment-to-experiment noise. → [Cell lines](report/cross-cell.qmd)
+3. **eCLIP detection follows expression.** The number of RBPs binding a gene tracks its expression (Spearman ρ ≈ `r r2(a1$rho_tpm)`) much more than its length, so any comparison of bound and unbound genes needs expression matching. → [The data](report/data.qmd)
+4. **Depth is the main technical variable.** Experiments range from `r n0(a1$peaks_min)` to `r n0(a1$peaks_max)` peaks, and later (ENCODE4) K562 experiments are shallower. Comparisons are depth-matched wherever peak counts matter. → [The data](report/data.qmd)
+
+## How this site is organised
+
+| Page | Question |
+|---|---|
+| [The data](report/data.qmd) | What was profiled, how deep are the experiments, and what do the peaks look like? |
+| [Where RBPs bind](report/binding.qmd) | Which transcript regions does each RBP bind, and how similar are RBPs? |
+| [Cell lines](report/cross-cell.qmd) | Does an RBP bind the same sites in two different cell types? |
+| [Methods](report/methods.qmd) | Data, pipeline, the checks that changed conclusions, limitations, how to reproduce |
+
+All numbers on this site are computed from the saved result tables when the site is built. The code (R and Python) is in the project's GitHub repository.

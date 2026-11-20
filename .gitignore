@@ -1,0 +1,17 @@
+# downloaded and intermediate data (re-created by the scripts)
+data/
+# environments, caches, logs
+.venv*/
+__pycache__/
+*.pyc
+.Rhistory
+.RData
+*.log
+# Quarto build output
+analysis/_site/
+analysis/.quarto/
+/.quarto/
+analysis/**/*_files/
+# OS
+Thumbs.db
+.DS_Store

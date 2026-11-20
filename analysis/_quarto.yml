@@ -1,0 +1,58 @@
+# Quarto website for the analysis section.
+#   Preview locally : quarto preview analysis
+#   Render          : quarto render analysis        (output: analysis/_site, git-ignored)
+#   Publish         : quarto publish gh-pages analysis   (needs a GitHub remote; pushes to the gh-pages branch)
+# Pages read only committed result tables and figures, so no pipeline data is needed to build the site.
+
+project:
+  type: website
+  output-dir: _site
+  # Published pages only. Drafts (report/sequence.qmd, report/regulation.qmd, report/slides.qmd) are
+  # rendered on demand, e.g. `quarto render analysis/report/sequence.qmd`, and are not linked from the site.
+  render:
+    - index.qmd
+    - report/data.qmd
+    - report/binding.qmd
+    - report/cross-cell.qmd
+    - report/methods.qmd
+  resources:                       # only figures shown on published pages
+    - results/figures/aim1_*.png
+    - results/figures/fig2a_sharing.png
+    - results/figures/fig2b_difference_decomposition.png
+    - results/figures/fig2c_binding_maps.png
+
+website:
+  title: "ENCODE eCLIP Atlas"
+  description: "Where RNA-binding proteins bind on their RNA targets: an analysis of 250 public ENCODE eCLIP experiments."
+  repo-url: https://github.com/VictorTong7/encode-eclip-atlas
+  repo-subdir: analysis
+  repo-actions: [source]
+  site-url: https://victortong7.github.io/encode-eclip-atlas/
+  navbar:
+    left:
+      - href: index.qmd
+        text: Overview
+      - href: report/data.qmd
+        text: The data
+      - href: report/binding.qmd
+        text: Where RBPs bind
+      - href: report/cross-cell.qmd
+        text: Cell lines
+      - href: report/methods.qmd
+        text: Methods
+  page-footer:
+    left: "Victor Tong · public ENCODE data (hg19 / GENCODE V19)"
+    right: "Built with R, Python and Quarto"
+
+format:
+  html:
+    theme: cosmo
+    css: report/report.css
+    toc: true
+    toc-depth: 3
+    fig-align: center
+
+execute:
+  echo: false
+  warning: false
+  message: false
