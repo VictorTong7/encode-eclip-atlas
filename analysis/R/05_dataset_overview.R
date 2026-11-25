@@ -15,7 +15,7 @@
 
 suppressPackageStartupMessages({ library(dplyr); library(tidyr) })
 MIN_PEAKS_AIM1 <- 100      # experiments used for binding profiles (Aim 1)
-MIN_PEAKS_MODEL <- 1000    # experiments used for sequence models (Aim 2)
+MIN_PEAKS_MODEL <- 1000    # experiments used for sequence models (Aim 3)
 
 man <- arrow::read_parquet("data/processed/manifest.parquet")
 kd <- arrow::read_parquet("data/processed/kd_pairs.parquet")

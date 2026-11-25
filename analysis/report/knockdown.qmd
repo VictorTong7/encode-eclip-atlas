@@ -1,0 +1,92 @@
+---
+title: "Knockdown data"
+subtitle: "Which shRNA knockdowns are good enough to test whether binding changes RNA levels?"
+---
+
+```{r setup}
+source("_common.R")
+k <- kd_numbers()
+t3 <- k$tiers
+```
+
+To ask whether an RBP's binding changes the RNA levels of its targets, each eCLIP experiment is paired with an RNA-seq experiment in which the same RBP was depleted by **shRNA knockdown** in the same cell line, and compared with a matched control. Before testing binding, this page checks the knockdown data: sequencing depth, how strongly each RBP was depleted, and how many genes each RBP binds.
+
+`r k$n_shrna` shRNA knockdowns have hg19 gene quantifications (`r k$n_crispri` CRISPRi knockdowns were set aside). Keeping the strongest knockdown per RBP and cell line (`r k$n_dup` weaker duplicates dropped) leaves **`r k$n_sel` knockdowns of `r k$n_rbp` RBPs**, `r k$n_rbp_both` of them in both cell lines. They share **`r k$n_ctl` control experiments** (up to `r k$max_per_ctl` knockdowns per control).
+
+## Are the RNA-seq samples deep enough?
+
+![**Figure 1. No sample is too shallow.** Reads assigned to genes, genes detected and the mitochondrial share of reads for every shRNA knockdown and control replicate, grouped by control batch.](`r fig("kd_qc_a_samples")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Samples:** `r k$n_samples` replicates (`r k$n_kd_rep` knockdown, `r k$n_ctl_rep` control); ENCODE RSEM gene quantifications, GENCODE V19 genes only.
+- **Depth:** `r sprintf("%.1f", k$reads_min)`–`r sprintf("%.0f", k$reads_max)` M reads assigned to genes (median `r sprintf("%.0f", k$reads_med)` M). Every replicate detects at least `r n0(k$genes10_min)` genes with ≥ 10 counts; replicate correlation is ≥ `r sprintf("%.3f", k$rep_r_min)` (log TPM).
+- **Mitochondrial reads:** `r pct(k$chrm_min)`–`r pct(k$chrm_max)` of reads (median `r pct(k$chrm_med)`). These, and small RNAs, distort TPM, so expression is measured as **nuclear TPM** (TPM recomputed without the 37 mitochondrial genes).
+- **Shaded:** `r k$n_odd_ctl` K562 control batches with an unusually large share of TPM in short genes (small RNAs), and their `r k$n_odd_kd` knockdowns. Only FXR2 K562 is analysed from these (the others are weaker duplicates); it is flagged and every headline result was checked without it.
+
+`r src("analysis/R/12_kd_qc.R")` Figures: `analysis/R/12_kd_qc_figures.R`; data: `analysis/results/tables/kd_sample_qc.tsv`.
+
+</details>
+
+## How strongly was each RBP depleted?
+
+![**Figure 2. `r k$n_sel - k$n_weak` of `r k$n_sel` knockdowns remove at least half of the target RNA.** Knockdown efficiency per knockdown, ranked, by cell line; knockdowns below 50% (grey) are excluded.](`r fig("kd_qc_b_efficiency")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Efficiency:** 1 − 2^(DESeq2 log2 fold change of the knocked-down RBP's own gene), i.e. the share of the target RNA removed. Median `r pct(k$eff_med)` (range `r pct(k$eff_min)`–`r pct(k$eff_max)`). It agrees with the nuclear-TPM ratio (Spearman ρ = `r r2(k$eff_ntpm_rho)`).
+- **Exclusion:** knockdowns removing less than 50% of the target RNA do not achieve the intended perturbation and are excluded (`r k$n_weak`: `r k$n_weak_k` K562, `r k$n_weak_h` HepG2). This removes NOL12 HepG2, one of the earlier "specific" examples. FXR2 K562 (`r pct(k$fxr2_eff)`) is kept.
+- **Differential expression:** one DESeq2 model per control batch (the control plus every selected knockdown that uses it); shrunken log2 fold changes (apeglm); significant = adjusted p < 0.05.
+
+`r src("analysis/R/10_knockdown_de.R")` (differential expression), `analysis/R/12_kd_qc.R`; data: `analysis/results/tables/kd_groups.tsv`.
+
+</details>
+
+## Does a stronger knockdown change more genes?
+
+![**Figure 3. Knockdown strength does not predict how many genes change.** Number of significantly changed genes against knockdown efficiency; point size = knockdowns sharing the same control.](`r fig("kd_qc_c_response")`){width=100%}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Changed genes per knockdown:** median `r n0(k$de_med)` (range `r n0(k$de_min)`–`r n0(k$de_max)`).
+- **Correlation with efficiency:** Spearman ρ = `r r2(k$rho_de[["K562"]])` (K562), `r r2(k$rho_de[["HepG2"]])` (HepG2). Even weak knockdowns change thousands of genes.
+- **Interpretation:** most changes after a knockdown are not specific to the depleted RBP: knockdowns sharing a control correlate, and a general response to the procedure is likely. This is why the next page compares bound genes with **unbound genes in the same knockdown**, never knockdowns with each other.
+
+`r src("analysis/R/12_kd_qc.R")`
+
+</details>
+
+## How many genes does each RBP bind?
+
+![**Figure 4. The analysed knockdowns bind tens to thousands of genes; ncRNA binders sit at the low end.** Genes bound by the RBP's eCLIP among the genes tested after its knockdown, per knockdown; colour = main binding category, shape = included or excluded.](`r fig("kd_qc_d_eclip_genes")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Bound gene:** ≥ 1 eCLIP peak of the same RBP in the same cell line (the experiment with most peaks), among genes tested after the knockdown and expressed in the controls (nuclear TPM ≥ 1). Median `r n0(k$bound_med)` bound genes per analysed knockdown.
+- **Excluded:** `r k$n_low_binding` knockdowns with < 30 bound genes (not shown); `r k$n_ncrna` **ncRNA binders** (main binding category from [Where RBPs bind](binding.qmd)), whose targets are mostly not measured by gene-level RNA-seq; and the weak knockdowns from Figure 2.
+- **Reassigned:** an ncRNA-category RBP with ≥ 300 bound mRNA genes and < 10% of peaks on ncRNA is moved to its second category (`r k$reassigned` → CDS) for this analysis only.
+- **Tiers** (dashed lines): < 300, 300–999 and ≥ 1,000 bound genes.
+
+`r src("analysis/R/12_kd_qc.R")`
+
+</details>
+
+## The analysed set
+
+![**Figure 5. From knockdowns found to knockdowns analysed.** Each box gives the knockdowns remaining; the side notes give the number removed at each step and why.](`r fig("kd_qc_e_flow")`){width=80%}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Analysed:** `r k$n_analysed` knockdowns (`r k$n_an_k` K562, `r k$n_an_h` HepG2), split by bound genes into `r t3[[1]]` (< 300), `r t3[[2]]` (300–999) and `r t3[[3]]` (≥ 1,000).
+- **Order of exclusion:** no hg19 data → weaker duplicates → too few bound genes → ncRNA binders → weak knockdowns.
+
+`r src("analysis/R/12_kd_qc.R")`
+
+</details>
+
+## Key takeaways
+
+1. **The RNA-seq data are deep and consistent.** All `r k$n_samples` replicates detect ≥ `r n0(k$genes10_min)` genes; distortions of TPM by mitochondrial and small RNAs are removed by using nuclear TPM.
+2. **About a quarter of knockdowns are too weak.** `r k$n_weak` of `r k$n_sel` remove less than half of the target RNA and are excluded.
+3. **A knockdown changes thousands of genes regardless of its strength**, so the effect of binding must be judged within each knockdown, against unbound genes.
+4. **`r k$n_analysed` knockdowns enter the analysis** of whether binding changes RNA levels → [Binding and RNA change](expression.qmd).

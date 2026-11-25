@@ -1,0 +1,7 @@
+cell_line	set	n	median_tpm	median_span	median_utr3	pct_protein_coding
+K562	all non-hub	9193	15.04	22400	1036	89.49
+K562	expression-matched non-hub	4112	38.39	21370	972	95.84
+K562	hub (≥ 20 RBPs)	2452	67.75	41750	1434	98.12
+HepG2	all non-hub	10495	15.82	23330	1069	90.43
+HepG2	expression-matched non-hub	4174	44.68	22070	1030	97.6
+HepG2	hub (≥ 20 RBPs)	1965	65.02	49940	1546	98.37

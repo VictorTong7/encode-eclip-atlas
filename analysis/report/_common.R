@@ -85,3 +85,61 @@ aim1b_numbers <- function() {
        n_peaks_decomp = tapply(dec$n, dec$type, sum),
        depth_rho = gfe$spearman_with_site_sharing[gfe$feature == "log10_min_peaks"])
 }
+
+# ---- knockdown data (analysis/R/12_kd_qc.R) ---------------------------------------------------------------------
+kd_numbers <- function() {
+  s <- tab("kd_sample_qc") |> filter(shrna); g <- tab("kd_groups"); sel <- tab("kd_selected")
+  a <- g |> filter(analysed)
+  rho_de <- sapply(split(g, g$cell_line), function(x) cor(x$kd_efficiency, x$n_de, method = "spearman"))
+  odd <- s |> filter(qc_flag != "")
+  list(n_samples = nrow(s), n_kd_rep = sum(s$kind == "knockdown"), n_ctl_rep = sum(s$kind == "control"),
+       reads_min = min(s$counts_M), reads_med = median(s$counts_M), reads_max = max(s$counts_M),
+       genes10_min = min(s$genes_c10), genes10_max = max(s$genes_c10), rep_r_min = min(s$rep_r_min),
+       chrm_min = min(s$chrM_share), chrm_max = max(s$chrM_share), chrm_med = median(s$chrM_share),
+       n_odd_ctl = n_distinct(odd$control_batch), n_odd_kd = n_distinct(odd$experiment[odd$kind == "knockdown"]),
+       n_shrna = sum(sel$assay_title == "shRNA RNA-seq"), n_crispri = sum(sel$assay_title != "shRNA RNA-seq"),
+       n_dup = sum(sel$reason == "weaker duplicate shRNA knockdown"),
+       n_sel = nrow(g), n_rbp = n_distinct(g$target),
+       n_rbp_both = sum(table(unique(g[, c("target", "cell_line")])$target) == 2),
+       n_ctl = n_distinct(g$control_experiment), max_per_ctl = max(table(g$control_experiment)),
+       eff_med = median(g$kd_efficiency), eff_min = min(g$kd_efficiency), eff_max = max(g$kd_efficiency),
+       n_weak = sum(g$weak_kd), n_weak_k = sum(g$weak_kd & g$cell_line == "K562"), n_weak_h = sum(g$weak_kd & g$cell_line == "HepG2"),
+       eff_ntpm_rho = cor(g$kd_efficiency, g$kd_efficiency_ntpm, method = "spearman"),
+       de_med = median(g$n_de), de_min = min(g$n_de), de_max = max(g$n_de), rho_de = rho_de,
+       n_binding = sum(!is.na(g$eclip_experiment)), n_low_binding = sum(is.na(g$eclip_experiment)),
+       n_ncrna = sum(g$excluded_reason == "ncRNA binder"), n_weak_excl = sum(g$excluded_reason == "weak knockdown"),
+       n_analysed = nrow(a), n_an_k = sum(a$cell_line == "K562"), n_an_h = sum(a$cell_line == "HepG2"),
+       tiers = table(factor(a$tier, c("< 300", "300–999", "≥ 1,000"))), bound_med = median(a$n_bound),
+       reassigned = paste(g$target[g$reassigned %in% TRUE], g$cell_line[g$reassigned %in% TRUE], collapse = " and "),
+       fxr2_eff = g$kd_efficiency[g$target == "FXR2" & g$cell_line == "K562"])
+}
+
+# ---- binding and RNA change (analysis/R/13, 17, 18, 19) --------------------------------------------------------------
+bvu_numbers <- function() {
+  base <- tab("bvu_baseline_expression"); cr <- tab("change_rate"); crs <- tab("change_rate_summary")
+  ms <- tab("bvu_magnitude_summary"); mg <- tab("bvu_magnitude")
+  hs <- tab("hub_attribution_summary"); ha <- tab("hub_attribution"); hg <- tab("hub_groups")
+  ur <- tab("hub_unbound_rates") |> filter(n_kd >= 20); go <- tab("hub_go"); pr <- tab("hub_gene_profile")
+  m <- cr |> filter(version == "main")
+  row <- function(d, s) d[d$set == s, ]
+  kd_val <- function(d, col, lab) setNames(d[[col]][match(lab, paste(d$target, d$cell_line))], lab)
+  pos <- c("SLBP K562", "CPSF6 K562", "IGF2BP3 HepG2", "RBFOX2 K562", "RBFOX2 HepG2", "DDX6 HepG2")
+  urw <- ur |> dplyr::select(cell_line, dec, hub_group, median_rate) |> tidyr::pivot_wider(names_from = hub_group, values_from = median_rate)
+  urm <- ur |> group_by(cell_line, hub_group) |> summarise(r = median(median_rate), .groups = "drop")
+  gom <- go |> filter(background == "matched")
+  list(n_kd = nrow(base), n_more_expr = sum(base$tpm_ratio > 1), tpm_b = median(base$tpm_bound), tpm_u = median(base$tpm_unbound),
+       tpm_ratio = median(base$tpm_ratio), bound_med = median(base$n_bound), genes_med = median(base$n_genes),
+       cr = row(crs, "main"), cr_hub = row(crs, "hub"), cr_strict = row(crs, "strict"), cr_null = row(crs, "null"),
+       cr_k = row(crs, "main K562"), cr_h = row(crs, "main HepG2"), n_rate_higher = sum(m$rate_bound > m$rate_unbound),
+       or_pos = kd_val(m, "or_mh", pos), or_top = m |> filter(q_mh < 0.05) |> arrange(desc(or_mh)) |> head(5),
+       or_low = m |> filter(q_mh < 0.05, or_mh < 1),
+       mag = row(ms, "main"), mag_null = row(ms, "null (random bound sets)"), mag_pos = kd_val(mg, "diff_median", pos),
+       mag_rho_or = cor(mg$diff_median, log(m$or_mh[match(mg$kd_experiment, m$kd_experiment)]), method = "spearman"),
+       hub_n = table(hg$cell_line, hg$hub_group), hub_tpm = tapply(hg$ntpm, list(hg$cell_line, hg$hub_group), median),
+       ur_more = sum(urw$`≥ 20` > urw$`< 5`, na.rm = TRUE), ur_cmp = sum(!is.na(urw$`≥ 20`) & !is.na(urw$`< 5`)), urm = urm,
+       hub = row(hs, "main"), hub_null = row(hs, "null (random bound sets)"), hub_share_pos = kd_val(ha, "hub_share", pos),
+       hub_cover = median(ha$n_genes / base$n_genes[match(ha$kd_experiment, base$kd_experiment)]),
+       go_both = nrow(gom |> count(ontology, ID) |> filter(n == 2)),
+       go_top = gom |> filter(ontology == "BP") |> group_by(cell_line) |> slice_min(p.adjust, n = 4, with_ties = FALSE) |> ungroup(),
+       prof = pr)
+}

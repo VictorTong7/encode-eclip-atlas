@@ -7,7 +7,7 @@ date: last-modified
 
 ```{r setup}
 source("report/_common.R")
-a1 <- aim1_numbers(); a1b <- aim1b_numbers()
+a1 <- aim1_numbers(); a1b <- aim1b_numbers(); bx <- bvu_numbers()
 ```
 
 RNA-binding proteins (RBPs) control many aspects of RNAs: how it's processed, where it goes, how long it lasts, how much protein it makes. 
@@ -16,7 +16,7 @@ This project analyses **`r n0(a1$n_exp)` public ENCODE eCLIP experiments**, whic
 It then combines these results with the change in RNA level after depletion of the RBPs.\
 \
 It asks **two core questions**: where do RBPs bind on each RNA and whether binding predicts how RNA levels change when the protein is removed.
-This site presents the answer to the first question; the second is in progress.
+This site presents the answers to both.
 
 ## Key findings
 
@@ -24,6 +24,7 @@ This site presents the answer to the first question; the second is in progress.
 2. **Binding is mostly a property of the protein, not the cell.** The same RBP binds the same *sites* in both cell lines far more often than different RBPs do: median depth-matched site sharing `r r2(a1b$m("test","site"))`, against `r sprintf("%.3f", a1b$m("null2","site"))` for similar RBPs. Most remaining differences come from which genes each cell line expresses, or from ordinary experiment-to-experiment noise. → [Cell lines](report/cross-cell.qmd)
 3. **eCLIP detection follows expression.** The number of RBPs binding a gene tracks its expression (Spearman ρ ≈ `r r2(a1$rho_tpm)`) much more than its length, so any comparison of bound and unbound genes needs expression matching. → [The data](report/data.qmd)
 4. **Depth is the main technical variable.** Experiments range from `r n0(a1$peaks_min)` to `r n0(a1$peaks_max)` peaks, and later (ENCODE4) K562 experiments are shallower. Comparisons are depth-matched wherever peak counts matter. → [The data](report/data.qmd)
+5. **Binding makes a gene somewhat more likely to change when the RBP is removed, but about half of that comes from hub genes.** At equal expression, bound genes have higher odds of changing after knockdown (median odds ratio `r r2(bx$cr$median_or)` across `r bx$n_kd` knockdowns), with barely larger changes. Genes bound by many RBPs change after almost any knockdown and explain `r pct(bx$hub$hub_share_total)` of the extra changes; known regulators such as SLBP, CPSF6, IGF2BP3 and RBFOX2 show a clear binding effect. → [Binding and RNA change](report/expression.qmd)
 
 ## How this site is organised
 
@@ -32,6 +33,8 @@ This site presents the answer to the first question; the second is in progress.
 | [The data](report/data.qmd) | What was profiled, how deep are the experiments, and what do the peaks look like? |
 | [Where RBPs bind](report/binding.qmd) | Which transcript regions does each RBP bind, and how similar are RBPs? |
 | [Cell lines](report/cross-cell.qmd) | Does an RBP bind the same sites in two different cell types? |
+| [Knockdown data](report/knockdown.qmd) | Which RBP knockdowns are good enough to test the effect of binding? |
+| [Binding and RNA change](report/expression.qmd) | Do genes an RBP binds change more when it is removed, and how much of that comes from genes bound by many RBPs? |
 | [Methods](report/methods.qmd) | Data, pipeline, the checks that changed conclusions, limitations, how to reproduce |
 
 All numbers on this site are computed from the saved result tables when the site is built. The code (R and Python) is in the project's GitHub repository.

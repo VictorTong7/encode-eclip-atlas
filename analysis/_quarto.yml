@@ -7,19 +7,24 @@
 project:
   type: website
   output-dir: _site
-  # Published pages only. Drafts (report/sequence.qmd, report/regulation.qmd, report/slides.qmd) are
-  # rendered on demand, e.g. `quarto render analysis/report/sequence.qmd`, and are not linked from the site.
+  # Site pages: Aim 1 (data, binding, cross-cell) and Aim 2 (knockdown, expression). Drafts (report/sequence.qmd,
+  # report/regulation.qmd, report/slides.qmd) are rendered on demand, e.g. `quarto render analysis/report/sequence.qmd`,
+  # and are not linked from the site.
   render:
     - index.qmd
     - report/data.qmd
     - report/binding.qmd
     - report/cross-cell.qmd
+    - report/knockdown.qmd
+    - report/expression.qmd
     - report/methods.qmd
   resources:                       # only figures shown on published pages
     - results/figures/aim1_*.png
     - results/figures/fig2a_sharing.png
     - results/figures/fig2b_difference_decomposition.png
     - results/figures/fig2c_binding_maps.png
+    - results/figures/kd_qc_*.png
+    - results/figures/bvu_*.png
 
 website:
   title: "ENCODE eCLIP Atlas"
@@ -38,6 +43,10 @@ website:
         text: Where RBPs bind
       - href: report/cross-cell.qmd
         text: Cell lines
+      - href: report/knockdown.qmd
+        text: Knockdown data
+      - href: report/expression.qmd
+        text: Binding and RNA change
       - href: report/methods.qmd
         text: Methods
   page-footer:

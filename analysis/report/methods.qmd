@@ -5,7 +5,7 @@ subtitle: "Data, pipeline, the checks that changed conclusions, limitations and 
 
 ```{r setup}
 source("_common.R")
-a1 <- aim1_numbers()
+a1 <- aim1_numbers(); kq <- kd_numbers()
 ```
 
 ## Data and approach
@@ -14,7 +14,8 @@ All data are public [ENCODE](https://www.encodeproject.org) files:
 
 - eCLIP IDR peaks (`r n0(a1$n_exp)` experiments, `r a1$n_rbp` RBPs, K562 and HepG2);
 - control RNA-seq gene quantifications, used to define expressed genes;
-- knockdown RNA-seq and RNA Bind-n-Seq metadata, used to describe what was profiled;
+- shRNA knockdown RNA-seq gene quantifications (`r kq$n_shrna` knockdowns, each with a matched control), used to measure RNA changes after an RBP is removed;
+- RNA Bind-n-Seq metadata, used to describe what was profiled;
 - hg19 genome and GENCODE V19 annotation.
 
 `r a1$n_lift` newer experiments exist only on GRCh38 and were lifted over to hg19. A download manifest records every file's accession and MD5 checksum.
@@ -26,11 +27,14 @@ flowchart LR
   B --> D[The data]
   B --> E[Where RBPs bind]
   E --> F[Same binding in<br/>both cell lines?]
+  G[Knockdown RNA-seq<br/>DESeq2 per control] --> H[Knockdown QC<br/>analysis set]
+  E --> I[Binding and<br/>RNA change]
+  H --> I
 ```
 
 **Tools:**
 
-- **R and Bioconductor:** GenomicRanges, GenomicFeatures, rtracklayer, ComplexHeatmap, ggplot2, patchwork;
+- **R and Bioconductor:** GenomicRanges, GenomicFeatures, rtracklayer, DESeq2 and apeglm (differential expression), clusterProfiler (GO), ComplexHeatmap, ggplot2, patchwork;
 - **Python:** pandas, requests and pyfaidx for the download pipeline and checks;
 - **Quarto** for this site.
 
@@ -46,6 +50,11 @@ Every number on these pages is computed from saved result tables when the site i
 | Site-sharing metric was inflated by unequal peak counts | Replaced it with a depth-matched metric | Removed a spurious "peak-count imbalance" association |
 | eCLIP detects binding mostly on abundant transcripts | Restricted cross-cell comparisons to genes expressed in both lines and explained one-line-only peaks by expression | Separated real cell-type differences from expression differences |
 | ENCODE temporarily blocked downloads part-way through | Rate-limited, resumable, MD5-checked downloader that stops on repeated refusals | All files verified |
+| Mitochondrial and small RNAs took up to half of the TPM in some RNA-seq samples | Measured expression as nuclear TPM (mitochondrial genes removed) | Expressed-gene sets no longer depend on sample composition |
+| Many knockdowns remove little of the target RNA | Excluded knockdowns removing < 50% of the target RNA | Conclusions rest on knockdowns that achieve the intended perturbation |
+| Bound genes are ~3× more expressed, and changes are easier to detect in abundant RNAs | Compared bound and unbound genes only within expression deciles | The apparent effect of binding shrank by more than half (odds ratio 1.77 → 1.17) |
+| Medians of small, skewed groups are biased upward even with no effect | Subtracted the value expected with no effect (permutation mean) | Removed a false across-RBP signal in the size of change |
+| Genes bound by many RBPs change after almost any knockdown | Split the extra changes of bound genes into a hub-status part and a binding part | About half of the apparent binding effect is a hub-gene effect |
 | Silent errors in a multi-step pipeline are easy to miss | Automated pre-processing checks: file checksums, peak counts and thresholds, annotation consistency and known biology (e.g. RBFOX2 binds near splice sites) | Pre-processing re-verified after every change |
 
 ## Limitations
@@ -54,6 +63,8 @@ Every number on these pages is computed from saved result tables when the site i
 - **Sensitivity:** eCLIP sensitivity scales with expression, so weak sites on rare transcripts are missed.
 - **Peak calls:** ENCODE's IDR peaks are used as given. About 16% overlap or abut another peak of the same experiment, and peaks are placed by their midpoint, so peaks straddling exon–intron boundaries can be assigned to either side.
 - **Region categories:** an experiment's main region is a coarse label on a continuous profile; experiments near the cut-off can change category between cell lines.
+- **Knockdown effects are mostly indirect:** a knockdown changes thousands of genes, and knockdowns sharing a control sample correlate. The analysis compares bound and unbound genes within each knockdown, which removes shared effects but not indirect effects on bound genes.
+- **RNA levels only:** gene-level RNA-seq misses binding that acts on splicing, isoforms, localisation or translation.
 
 ## Reproducibility
 
@@ -65,6 +76,8 @@ Every number on these pages is computed from saved result tables when the site i
 | The data | `analysis/R/05_dataset_overview*.R` | <1 min |
 | Where RBPs bind | `analysis/R/05_binding_landscape*.R` | <1 min |
 | Cell lines | `analysis/R/05b–05c` | ~8 min |
+| Knockdown data | `analysis/R/10_knockdown_de.R`, `analysis/R/12_kd_qc*.R` | ~7 min |
+| Binding and RNA change | `analysis/R/18_change_rate.R`, `13_bound_vs_unbound.R`, `19_hub_attribution.R`, `17_hub_go.R`, `13_bound_vs_unbound_figures.R` | ~20 min |
 | This site | `quarto render analysis` | ~1 min |
 
 **Environment:** R 4.6 + Bioconductor 3.23 (`preprocess/R/00_install_packages.R`); Python 3 (`requirements.txt`). Raw data (5.6 GB) are not stored in the repository; the scripts download and verify them.

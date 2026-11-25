@@ -7,7 +7,7 @@
 # Grouping (2026-11-19): each experiment gets a MAIN BINDING CATEGORY = the group of the region with the
 # highest peak share relative to the average RBP (log2_vs_all_rbps). If the best group beats the next group
 # by < MARGIN log2, the experiment is "mixed" (no clear preference). The earlier Ward clusters (k chosen by
-# silhouette) are still computed and written, unchanged, because Aim 1b (05b) and Aim 2 (07) use them as a
+# silhouette) are still computed and written, unchanged, because Aim 1b (05b) and Aim 3 (07) use them as a
 # "same-cluster" null; they are no longer used for Aim 1 figures (weak structure: see cluster_silhouette.tsv).
 #
 # Inputs : preprocess/results/tables/{region_enrichment,peak_qc}.tsv

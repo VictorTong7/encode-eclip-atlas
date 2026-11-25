@@ -11,6 +11,7 @@
 - **Most RBPs have a clear main binding region.** All 935,151 binding sites were assigned to transcript regions. 206 of 231 experiments favour one region (splice-site or deep intron, coding sequence, 3′UTR, 5′UTR or small non-coding RNA), and proteins with known roles land where expected.
 - **Binding is a property of the protein, not the cell.** The same protein binds the same sites, genes and positions in two different cell types far more than different proteins do (median binding-profile correlation 0.89, against about 0 for different proteins). Most differences are explained by which genes each cell expresses.
 - **eCLIP detection follows expression.** The number of proteins found on a gene tracks its expression (Spearman ρ ≈ 0.70) more than its length, so any comparison of bound and unbound genes needs expression matching.
+- **Binding modestly raises the chance that a gene's RNA level changes when the protein is knocked down.** Across 115 quality-checked knockdowns, bound genes are more likely to change than unbound genes of the same expression (median odds ratio 1.17; significant in 50), but they change by barely more. About 56% of this extra change is a hub-gene effect: genes bound by many proteins change after almost any knockdown. Known regulators (SLBP, CPSF6, IGF2BP3, RBFOX2) show clear binding-specific effects.
 - **Experiment depth is the main technical variable.** It ranges from 9 to 32,718 binding sites per experiment and differs between ENCODE phases, so comparisons are depth-matched.
 
 ## What this project demonstrates
@@ -26,16 +27,16 @@
 | Path | Contents |
 |---|---|
 | `preprocess/` | Download, liftover, region annotation, peak annotation, and consistency checks (`checks/`). See [`preprocess/README.md`](preprocess/README.md) for the peak filters used |
-| `analysis/R/` | Analyses: dataset overview, binding landscape, cell-line comparison; shared plot styling in `lib_plot.R` |
+| `analysis/R/` | Analyses: dataset overview, binding landscape, cell-line comparison, knockdown RNA-seq (differential expression, QC), binding vs RNA change; shared plot styling in `lib_plot.R` |
 | `analysis/results/` | Result tables (TSV) and figures (PNG) |
 | `analysis/index.qmd`, `analysis/report/` | Website source (Quarto) |
 
-Further analyses (sequence preferences, binding vs RNA-level change, scoring individual binding sites) are in progress and will be added when complete.
+Further analyses (sequence preferences, scoring individual binding sites) are in progress and will be added when complete.
 
 ## Reproduce
 
 1. **Install:** R 4.6 + Bioconductor 3.23 (`Rscript preprocess/R/00_install_packages.R`), Python 3 (`pip install -r requirements.txt`), Quarto ≥ 1.4.
-2. **Run from the repository root, in order** (about 30 minutes; the download needs about 6 GB of disk):
+2. **Run from the repository root, in order** (about 1 hour; the download needs about 6 GB of disk):
    ```bash
    python -I preprocess/python/01_build_manifest.py
    python -I preprocess/python/02_download.py
@@ -47,6 +48,11 @@ Further analyses (sequence preferences, binding vs RNA-level change, scoring ind
    Rscript analysis/R/05_dataset_overview.R      && Rscript analysis/R/05_dataset_overview_figures.R
    Rscript analysis/R/05_binding_landscape.R     && Rscript analysis/R/05_binding_landscape_figures.R
    Rscript analysis/R/05b_cross_cell_binding.R   && Rscript analysis/R/05c_cross_cell_figures.R
+   Rscript analysis/R/10_knockdown_de.R --workers=8
+   Rscript analysis/R/12_kd_qc.R                 && Rscript analysis/R/12_kd_qc_figures.R
+   Rscript analysis/R/18_change_rate.R           && Rscript analysis/R/13_bound_vs_unbound.R
+   Rscript analysis/R/19_hub_attribution.R       && Rscript analysis/R/17_hub_go.R
+   Rscript analysis/R/13_bound_vs_unbound_figures.R
    ```
 3. **Build the website:** `quarto render analysis` (or `quarto preview analysis`). It needs only the committed tables and figures.
 

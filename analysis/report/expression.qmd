@@ -1,0 +1,139 @@
+---
+title: "Binding and RNA change"
+subtitle: "When an RBP is knocked down, do the genes it binds change more than genes it does not bind?"
+---
+
+```{r setup}
+source("_common.R")
+b <- bvu_numbers()
+cr <- b$cr; mg <- b$mag; hb <- b$hub
+or_txt <- function(lab) sprintf("%s %.1f", lab, b$or_pos[[lab]])
+```
+
+For each of the `r b$n_kd` knockdowns kept on [Knockdown data](knockdown.qmd), genes are labelled **bound** (at least one eCLIP peak of the depleted RBP in the same cell line) or **unbound**, and **changed** (significantly different from the control, adjusted p < 0.05, either direction) or **unchanged**. A typical knockdown has `r n0(b$genes_med)` analysed genes, `r n0(b$bound_med)` of them bound. All comparisons are made **within a knockdown**, between its bound and unbound genes, so effects shared by all knockdowns cancel out.
+
+## Bound genes are more highly expressed
+
+![**Figure 1. Bound genes are more highly expressed than unbound genes in every knockdown.** Median expression in the control samples of bound and unbound genes, per knockdown.](`r fig("bvu_a_baseline")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Expression:** median nuclear TPM across the cell line's control samples. Median `r sprintf("%.0f", b$tpm_b)` (bound) vs `r sprintf("%.0f", b$tpm_u)` TPM (unbound), `r sprintf("%.1f", b$tpm_ratio)`-fold; higher for bound genes in `r b$n_more_expr` of `r b$n_kd` knockdowns.
+- **Why it matters:** eCLIP detects binding mostly on abundant RNAs, and changes are easier to detect in abundant RNAs. Without adjustment, bound genes would look more responsive simply because they are more abundant. Every comparison below is therefore made **within expression deciles** (10 groups of genes of similar expression, defined within each knockdown).
+- **Genes:** tested by DESeq2 for the knockdown, expressed (nuclear TPM ≥ 1), not the RBP's own gene, with a defined adjusted p-value. The same genes and deciles are used in Figures 1–4.
+
+`r src("analysis/R/13_bound_vs_unbound.R")` Figures: `analysis/R/13_bound_vs_unbound_figures.R`; data: `analysis/results/tables/bvu_baseline_expression.tsv`.
+
+</details>
+
+## Do bound genes change more often?
+
+![**Figure 2. Before adjustment, bound genes change more often than unbound genes in `r b$n_rate_higher` of `r b$n_kd` knockdowns.** Share of bound and unbound genes that change after knockdown.](`r fig("bvu_b_rates")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Change rate:** share of genes with adjusted p < 0.05. Median `r pct(cr$median_rate_bound)` of bound vs `r pct(cr$median_rate_unbound)` of unbound genes; unadjusted odds ratio `r r2(cr$median_or_raw)`.
+- **Ranking:** knockdowns ordered by the change rate of unbound genes, which ranges widely: some knockdowns change few genes, others more than half.
+- These rates are not yet adjusted for expression (Figure 1).
+
+`r src("analysis/R/18_change_rate.R")` Data: `analysis/results/tables/change_rate.tsv`.
+
+</details>
+
+![**Figure 3. At equal expression, bound genes have higher odds of changing in `r cr$n_sig_up` of `r cr$n_kd` knockdowns.** Expression-adjusted odds ratio of changing, bound vs unbound genes, per knockdown.](`r fig("bvu_c_odds")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Odds ratio:** for each knockdown, a 2 × 2 table (bound / unbound × changed / unchanged) within each expression decile, combined with the Mantel–Haenszel odds ratio. 1 = no difference; 1.5 = 50% higher odds of changing for a bound gene than for an unbound gene of the same expression.
+- **Result:** median `r r2(cr$median_or)` (95% CI `r r2(cr$or_ci_lo)`–`r r2(cr$or_ci_hi)`; signed-rank p = `r sprintf("%.0e", cr$signed_rank_p)`); above 1 in `r cr$n_or_gt1` knockdowns; significantly higher in `r cr$n_sig_up` and lower in `r cr$n_sig_down` (Benjamini–Hochberg q < 0.05). K562 `r r2(b$cr_k$median_or)`, HepG2 `r r2(b$cr_h$median_or)`.
+- **Known regulators** are among the clearest: `r or_txt("SLBP K562")`, `r or_txt("RBFOX2 K562")`, `r or_txt("CPSF6 K562")`, `r or_txt("IGF2BP3 HepG2")`; DDX6 HepG2 `r sprintf("%.1f", b$or_pos[["DDX6 HepG2"]])` (not significant).
+- **Checks:** a stricter control (only genes with adjusted p > 0.5 count as unchanged) gives `r r2(b$cr_strict$median_or)`; random gene sets of the same size give `r r2(b$cr_null$median_or)` with no significant knockdowns. Adjusting for hub status as well lowers the median to `r r2(b$cr_hub$median_or)` (Figure 7).
+
+`r src("analysis/R/18_change_rate.R")`
+
+</details>
+
+## Are the changes larger?
+
+![**Figure 4. Bound genes change only slightly more than unbound genes of the same expression.** Difference in the median size of change (|log2 fold change|), bound − unbound genes, per knockdown.](`r fig("bvu_d_magnitude")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Genes:** all bound and unbound genes, changed or not; size of change = |shrunken log2 fold change|, both directions together.
+- **Statistic:** within each expression decile, median |log2 FC| of bound minus unbound genes, averaged over deciles (weighted by bound genes). Medians of small, skewed groups give a small positive value even with no effect, so the value expected with no effect (from 1,000 permutations of the bound labels) is subtracted.
+- **Result:** median `r sprintf("%+.4f", mg$median_diff)` log2 FC (95% CI `r sprintf("%+.4f", mg$ci_lo)` to `r sprintf("%+.4f", mg$ci_hi)`; signed-rank p = `r sprintf("%.3f", mg$signed_rank_p)`); larger in `r mg$n_sig_up` and smaller in `r mg$n_sig_down` knockdowns. Random gene sets: `r sprintf("%+.4f", b$mag_null$median_diff)`. Knockdowns with larger changes also have higher odds of changing (Spearman ρ = `r r2(b$mag_rho_or)` with Figure 3).
+- **Examples:** SLBP K562 `r sprintf("%+.2f", b$mag_pos[["SLBP K562"]])`, CPSF6 K562 `r sprintf("%+.2f", b$mag_pos[["CPSF6 K562"]])`, IGF2BP3 HepG2 `r sprintf("%+.2f", b$mag_pos[["IGF2BP3 HepG2"]])`, RBFOX2 K562 `r sprintf("%+.2f", b$mag_pos[["RBFOX2 K562"]])`.
+- **Uncertainty:** per-knockdown 95% CIs from bootstrapping genes (optimistic, because genes in a knockdown are not independent); the across-knockdown summary is the main result.
+
+`r src("analysis/R/13_bound_vs_unbound.R")` Data: `analysis/results/tables/bvu_magnitude.tsv`.
+
+</details>
+
+## How much of the effect comes from hub genes?
+
+Genes bound by many RBPs ("hub genes") are common and change after the knockdown of almost any RBP. Because a gene bound by the depleted RBP is often a hub gene, part of the effect in Figure 3 could come from hub status rather than from binding.
+
+![**Figure 5. Genes bound by many RBPs are few and highly expressed.** Genes per hub group and their expression in control samples.](`r fig("bvu_e_hub_groups")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Hub group:** number of profiled RBPs (eCLIP, ≥ 100 peaks) binding the gene: < 5, 5–19 or ≥ 20. K562: `r n0(b$hub_n["K562", "< 5"])` / `r n0(b$hub_n["K562", "5–19"])` / `r n0(b$hub_n["K562", "≥ 20"])` genes; HepG2: `r n0(b$hub_n["HepG2", "< 5"])` / `r n0(b$hub_n["HepG2", "5–19"])` / `r n0(b$hub_n["HepG2", "≥ 20"])`.
+- **Expression:** median nuclear TPM `r sprintf("%.0f", b$hub_tpm["K562", "< 5"])` / `r sprintf("%.0f", b$hub_tpm["K562", "5–19"])` / `r sprintf("%.0f", b$hub_tpm["K562", "≥ 20"])` (K562).
+- **Genes:** expressed genes tested in at least half of the cell line's knockdowns and with a count of binding RBPs.
+
+`r src("analysis/R/19_hub_attribution.R")` Data: `analysis/results/tables/hub_groups.tsv`.
+
+</details>
+
+![**Figure 6. Hub genes change more often even when the knocked-down RBP does not bind them.** Change rate of unbound genes by hub group, within expression deciles.](`r fig("bvu_f_hub_rates")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Genes:** only genes *not* bound by the knocked-down RBP, so binding cannot explain their changes. Hub group counts the *other* RBPs binding the gene.
+- **Result:** hub genes (≥ 20 other RBPs) change more often than genes bound by < 5 RBPs in `r b$ur_more` of `r b$ur_cmp` decile × cell-line comparisons with enough data. Median change rate across deciles: K562 `r pct(b$urm$r[b$urm$cell_line == "K562" & b$urm$hub_group == "< 5"])` (< 5) vs `r pct(b$urm$r[b$urm$cell_line == "K562" & b$urm$hub_group == "≥ 20"])` (≥ 20); HepG2 `r pct(b$urm$r[b$urm$cell_line == "HepG2" & b$urm$hub_group == "< 5"])` vs `r pct(b$urm$r[b$urm$cell_line == "HepG2" & b$urm$hub_group == "≥ 20"])`.
+- **Display:** median over knockdowns; a point is shown when the decile × hub-group cell has ≥ 10 genes in at least 20 knockdowns (few hub genes are lowly expressed).
+
+`r src("analysis/R/19_hub_attribution.R")` Data: `analysis/results/tables/hub_unbound_rates.tsv`.
+
+</details>
+
+![**Figure 7. Of `r n0(round(hb$extra_total))` extra changing targets, `r pct(hb$hub_share_total)` are explained by hub status and `r pct(1 - hb$hub_share_total)` by binding.** Per knockdown, the bound genes that change beyond what expression predicts, split into the part expected from hub status and the part attributable to binding.](`r fig("bvu_g_hub_attribution")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **For each knockdown:**
+  - *observed*: bound genes that change;
+  - *expected from expression*: the number expected if bound genes changed like unbound genes of the same expression decile;
+  - *expected from expression and hub status*: the same, using unbound genes of the same decile **and** hub group (< 5 / 5–19 / ≥ 20 other RBPs).
+- **Split:** the extra changing targets (observed − expected from expression; black dot) = **explained by hub status** (yellow; the difference between the two expectations) + **attributable to binding** (purple; observed − expected from expression and hub status). Bars below 0 mean fewer changes than expected.
+- **Result:** of `r n0(round(hb$extra_total))` extra changing bound genes over all knockdowns, `r n0(round(hb$extra_hub))` (`r pct(hb$hub_share_total)`, 95% CI `r pct(hb$hub_share_lo)`–`r pct(hb$hub_share_hi)`) are explained by hub status and `r n0(round(hb$extra_binding))` by binding. Hub status explains more than half of the extra in `r hb$n_hub_majority` of `r hb$n_extra_pos` knockdowns with any extra.
+- **Known regulators are binding-driven:** hub share SLBP K562 `r sprintf("%.2f", b$hub_share_pos[["SLBP K562"]])`, CPSF6 K562 `r sprintf("%.2f", b$hub_share_pos[["CPSF6 K562"]])`, IGF2BP3 HepG2 `r sprintf("%.2f", b$hub_share_pos[["IGF2BP3 HepG2"]])`, RBFOX2 K562 `r sprintf("%.2f", b$hub_share_pos[["RBFOX2 K562"]])`.
+- **Caveats:**
+  - Only genes with a count of binding RBPs are used (median `r pct(b$hub_cover)` of each knockdown's genes; most of the rest are small RNAs).
+  - Random gene sets give `r sprintf("%+.0f", b$hub_null$extra_total)` extra changing genes in total, almost all in the binding part (`r sprintf("%+.0f", b$hub_null$extra_binding)`): the binding part is slightly overstated.
+  - Counts scale with the number of bound genes; compare RBPs' effect strength with Figure 3 instead.
+  - "Explained by hub status" means "changes at the rate typical of genes bound by many RBPs"; hub status may stand in for other properties of these genes (Figure 8).
+
+`r src("analysis/R/19_hub_attribution.R")` Data: `analysis/results/tables/hub_attribution.tsv`.
+
+</details>
+
+![**Figure 8. Hub genes are long regulatory genes.** GO terms enriched in hub genes compared with non-hub genes of similar expression, and the gene profile of hub genes.](`r fig("bvu_h_hub_go")`){.column-page-left}
+
+<details class="legend-more"><summary>Extended legend</summary>
+
+- **Test:** GO enrichment (clusterProfiler; biological process and cellular component; Benjamini–Hochberg q < 0.05; redundant terms collapsed) of hub genes (≥ 20 RBPs) against hub genes plus 3 expression-matched non-hub genes per hub gene. `r b$go_both` terms are significant in both cell lines.
+- **Top biological processes:** `r paste(unique(b$go_top$Description), collapse = "; ")`.
+- **Gene profile:** hub genes are about twice as long as expression-matched non-hub genes and have longer 3′UTRs; matching on expression is incomplete for the most highly expressed genes.
+
+`r src("analysis/R/17_hub_go.R")` Data: `analysis/results/tables/hub_go.tsv`, `hub_gene_profile.tsv`.
+
+</details>
+
+## Key takeaways
+
+1. **Bound genes change more often than unbound genes of the same expression.** The expression-adjusted odds of changing are higher for bound genes (median odds ratio `r r2(cr$median_or)`), significantly so in `r cr$n_sig_up` of `r cr$n_kd` knockdowns; without adjusting for expression the difference looks much larger (`r r2(cr$median_or_raw)`).
+2. **The changes are barely larger.** At equal expression, bound genes change by `r sprintf("%+.3f", mg$median_diff)` log2 FC more than unbound genes (median): binding mainly affects *whether* a gene changes, not how much.
+3. **About half of the extra changes come from hub genes.** Genes bound by many RBPs change after almost any knockdown; hub status explains `r pct(hb$hub_share_total)` of the extra changing targets, binding the remaining `r pct(1 - hb$hub_share_total)`.
+4. **Known regulators show a real binding effect.** SLBP, CPSF6, IGF2BP3 and RBFOX2 all have clearly raised odds of change in their bound genes, and their extra changing targets are almost entirely attributable to binding.
+5. **For most RBPs, binding alone is a weak predictor of RNA-level change** after knockdown, consistent with many binding sites being non-functional at the RNA level, or acting on splicing, localisation or translation rather than RNA abundance.
