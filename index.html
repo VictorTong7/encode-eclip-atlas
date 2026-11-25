@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Victor Tong">
-<meta name="dcterms.date" content="2026-11-20">
+<meta name="dcterms.date" content="2026-11-25">
 
 <title>ENCODE eCLIP Atlas</title>
 <style>
@@ -114,6 +114,14 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Cell lines</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./report/knockdown.html"> 
+<span class="menu-text">Knockdown data</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./report/expression.html"> 
+<span class="menu-text">Binding and RNA change</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./report/methods.html"> 
 <span class="menu-text">Methods</span></a>
   </li>  
@@ -162,7 +170,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 20, 2026</p>
+      <p class="date">November 25, 2026</p>
     </div>
   </div>
   
@@ -176,7 +184,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>RNA-binding proteins (RBPs) control many aspects of RNAs: how it’s processed, where it goes, how long it lasts, how much protein it makes. Thus, one important aspect of RBP biology is to identify what RNAs a RBP binds to. This project analyses <strong>250 public ENCODE eCLIP experiments</strong>, which map the binding sites of <strong>168 RBPs</strong> in two human cell lines (K562 and HepG2). It then combines these results with the change in RNA level after depletion of the RBPs.<br>
 <br>
-It asks <strong>two core questions</strong>: where do RBPs bind on each RNA and whether binding predicts how RNA levels change when the protein is removed. This site presents the answer to the first question; the second is in progress.</p>
+It asks <strong>two core questions</strong>: where do RBPs bind on each RNA and whether binding predicts how RNA levels change when the protein is removed. This site presents the answers to both.</p>
 <section id="key-findings" class="level2">
 <h2 class="anchored" data-anchor-id="key-findings">Key findings</h2>
 <ol type="1">
@@ -184,6 +192,7 @@ It asks <strong>two core questions</strong>: where do RBPs bind on each RNA and 
 <li><strong>Binding is mostly a property of the protein, not the cell.</strong> The same RBP binds the same <em>sites</em> in both cell lines far more often than different RBPs do: median depth-matched site sharing 0.22, against 0.004 for similar RBPs. Most remaining differences come from which genes each cell line expresses, or from ordinary experiment-to-experiment noise. → <a href="./report/cross-cell.html">Cell lines</a></li>
 <li><strong>eCLIP detection follows expression.</strong> The number of RBPs binding a gene tracks its expression (Spearman ρ ≈ 0.70) much more than its length, so any comparison of bound and unbound genes needs expression matching. → <a href="./report/data.html">The data</a></li>
 <li><strong>Depth is the main technical variable.</strong> Experiments range from 9 to 32,718 peaks, and later (ENCODE4) K562 experiments are shallower. Comparisons are depth-matched wherever peak counts matter. → <a href="./report/data.html">The data</a></li>
+<li><strong>Binding makes a gene somewhat more likely to change when the RBP is removed, but about half of that comes from hub genes.</strong> At equal expression, bound genes have higher odds of changing after knockdown (median odds ratio 1.17 across 115 knockdowns), with barely larger changes. Genes bound by many RBPs change after almost any knockdown and explain 56% of the extra changes; known regulators such as SLBP, CPSF6, IGF2BP3 and RBFOX2 show a clear binding effect. → <a href="./report/expression.html">Binding and RNA change</a></li>
 </ol>
 </section>
 <section id="how-this-site-is-organised" class="level2">
@@ -207,6 +216,14 @@ It asks <strong>two core questions</strong>: where do RBPs bind on each RNA and 
 <tr class="odd">
 <td><a href="./report/cross-cell.html">Cell lines</a></td>
 <td>Does an RBP bind the same sites in two different cell types?</td>
+</tr>
+<tr class="even">
+<td><a href="./report/knockdown.html">Knockdown data</a></td>
+<td>Which RBP knockdowns are good enough to test the effect of binding?</td>
+</tr>
+<tr class="odd">
+<td><a href="./report/expression.html">Binding and RNA change</a></td>
+<td>Do genes an RBP binds change more when it is removed, and how much of that comes from genes bound by many RBPs?</td>
 </tr>
 <tr class="even">
 <td><a href="./report/methods.html">Methods</a></td>

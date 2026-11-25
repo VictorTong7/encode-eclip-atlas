@@ -115,6 +115,14 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Cell lines</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="../report/knockdown.html"> 
+<span class="menu-text">Knockdown data</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../report/expression.html"> 
+<span class="menu-text">Binding and RNA change</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link active" href="../report/methods.html" aria-current="page"> 
 <span class="menu-text">Methods</span></a>
   </li>  
@@ -171,7 +179,8 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li>eCLIP IDR peaks (250 experiments, 168 RBPs, K562 and HepG2);</li>
 <li>control RNA-seq gene quantifications, used to define expressed genes;</li>
-<li>knockdown RNA-seq and RNA Bind-n-Seq metadata, used to describe what was profiled;</li>
+<li>shRNA knockdown RNA-seq gene quantifications (189 knockdowns, each with a matched control), used to measure RNA changes after an RBP is removed;</li>
+<li>RNA Bind-n-Seq metadata, used to describe what was profiled;</li>
 <li>hg19 genome and GENCODE V19 annotation.</li>
 </ul>
 <p>27 newer experiments exist only on GRCh38 and were lifted over to hg19. A download manifest records every file’s accession and MD5 checksum.</p>
@@ -187,6 +196,9 @@ ul.task-list li input[type="checkbox"] {
   B --&gt; D[The data]
   B --&gt; E[Where RBPs bind]
   E --&gt; F[Same binding in&lt;br/&gt;both cell lines?]
+  G[Knockdown RNA-seq&lt;br/&gt;DESeq2 per control] --&gt; H[Knockdown QC&lt;br/&gt;analysis set]
+  E --&gt; I[Binding and&lt;br/&gt;RNA change]
+  H --&gt; I
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -195,7 +207,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <p><strong>Tools:</strong></p>
 <ul>
-<li><strong>R and Bioconductor:</strong> GenomicRanges, GenomicFeatures, rtracklayer, ComplexHeatmap, ggplot2, patchwork;</li>
+<li><strong>R and Bioconductor:</strong> GenomicRanges, GenomicFeatures, rtracklayer, DESeq2 and apeglm (differential expression), clusterProfiler (GO), ComplexHeatmap, ggplot2, patchwork;</li>
 <li><strong>Python:</strong> pandas, requests and pyfaidx for the download pipeline and checks;</li>
 <li><strong>Quarto</strong> for this site.</li>
 </ul>
@@ -248,6 +260,31 @@ ul.task-list li input[type="checkbox"] {
 <td>All files verified</td>
 </tr>
 <tr class="odd">
+<td>Mitochondrial and small RNAs took up to half of the TPM in some RNA-seq samples</td>
+<td>Measured expression as nuclear TPM (mitochondrial genes removed)</td>
+<td>Expressed-gene sets no longer depend on sample composition</td>
+</tr>
+<tr class="even">
+<td>Many knockdowns remove little of the target RNA</td>
+<td>Excluded knockdowns removing &lt; 50% of the target RNA</td>
+<td>Conclusions rest on knockdowns that achieve the intended perturbation</td>
+</tr>
+<tr class="odd">
+<td>Bound genes are ~3× more expressed, and changes are easier to detect in abundant RNAs</td>
+<td>Compared bound and unbound genes only within expression deciles</td>
+<td>The apparent effect of binding shrank by more than half (odds ratio 1.77 → 1.17)</td>
+</tr>
+<tr class="even">
+<td>Medians of small, skewed groups are biased upward even with no effect</td>
+<td>Subtracted the value expected with no effect (permutation mean)</td>
+<td>Removed a false across-RBP signal in the size of change</td>
+</tr>
+<tr class="odd">
+<td>Genes bound by many RBPs change after almost any knockdown</td>
+<td>Split the extra changes of bound genes into a hub-status part and a binding part</td>
+<td>About half of the apparent binding effect is a hub-gene effect</td>
+</tr>
+<tr class="even">
 <td>Silent errors in a multi-step pipeline are easy to miss</td>
 <td>Automated pre-processing checks: file checksums, peak counts and thresholds, annotation consistency and known biology (e.g.&nbsp;RBFOX2 binds near splice sites)</td>
 <td>Pre-processing re-verified after every change</td>
@@ -262,6 +299,8 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>Sensitivity:</strong> eCLIP sensitivity scales with expression, so weak sites on rare transcripts are missed.</li>
 <li><strong>Peak calls:</strong> ENCODE’s IDR peaks are used as given. About 16% overlap or abut another peak of the same experiment, and peaks are placed by their midpoint, so peaks straddling exon–intron boundaries can be assigned to either side.</li>
 <li><strong>Region categories:</strong> an experiment’s main region is a coarse label on a continuous profile; experiments near the cut-off can change category between cell lines.</li>
+<li><strong>Knockdown effects are mostly indirect:</strong> a knockdown changes thousands of genes, and knockdowns sharing a control sample correlate. The analysis compares bound and unbound genes within each knockdown, which removes shared effects but not indirect effects on bound genes.</li>
+<li><strong>RNA levels only:</strong> gene-level RNA-seq misses binding that acts on splicing, isoforms, localisation or translation.</li>
 </ul>
 </section>
 <section id="reproducibility" class="level2">
@@ -309,6 +348,16 @@ ul.task-list li input[type="checkbox"] {
 <td>Cell lines</td>
 <td><code>analysis/R/05b–05c</code></td>
 <td>~8 min</td>
+</tr>
+<tr class="odd">
+<td>Knockdown data</td>
+<td><code>analysis/R/10_knockdown_de.R</code>, <code>analysis/R/12_kd_qc*.R</code></td>
+<td>~7 min</td>
+</tr>
+<tr class="even">
+<td>Binding and RNA change</td>
+<td><code>analysis/R/18_change_rate.R</code>, <code>13_bound_vs_unbound.R</code>, <code>19_hub_attribution.R</code>, <code>17_hub_go.R</code>, <code>13_bound_vs_unbound_figures.R</code></td>
+<td>~20 min</td>
 </tr>
 <tr class="odd">
 <td>This site</td>
